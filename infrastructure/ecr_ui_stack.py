@@ -61,7 +61,7 @@ class ECRUIStack(NestedStack):
         # Trigger CodeBuild job
         containerize_build_job =_codebuild.Project(
             self,
-            f"rag_llm_ui_container_{env_name}",
+            f"propertybooking{env_name}",
             build_spec=_codebuild.BuildSpec.from_object_to_yaml(build_spec_yml),
             environment = _codebuild.BuildEnvironment(
             build_image=_codebuild.LinuxBuildImage.STANDARD_6_0,
