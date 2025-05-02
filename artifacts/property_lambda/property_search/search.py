@@ -97,3 +97,26 @@ def handler(event, context):
             'total': response['hits']['total']['value']
         })
     } 
+
+class CustomJsonEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            if float(obj).is_integer():
+                return int(float(obj))
+            else:
+                return float(obj)
+        return super(CustomJsonEncoder, self).default(obj)
+
+# JSON REST output builder method
+def respond(err, res=None):
+    return {
+        "statusCode": "400" if err else res["statusCode"],
+        "body": json.dumps(err) if err else json.dumps(res, cls=CustomJsonEncoder),
+        "headers": {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Credentials": "*",
+        },
+    }

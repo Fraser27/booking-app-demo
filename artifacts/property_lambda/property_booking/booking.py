@@ -23,16 +23,13 @@ def handler(event, context):
     
     # Validate input
     if not all([property_id, user_id, check_in, check_out]):
-        return {
+        return respond(None,{
             'statusCode': 400,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
+            
             'body': json.dumps({
                 'error': 'Missing required fields'
             })
-        }
+        })
     
     # Check for existing bookings
     try:
@@ -50,27 +47,19 @@ def handler(event, context):
         # Check for date conflicts
         for booking in response.get('Items', []):
             if (check_in <= booking['check_out'] and check_out >= booking['check_in']):
-                return {
+                return respond(None,{
                     'statusCode': 409,
-                    'headers': {
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Credentials': True,
-                    },
                     'body': json.dumps({
                         'error': 'Property is already booked for these dates'
                     })
-                }
+                })
     except Exception as e:
-        return {
+        return respond(None,{
             'statusCode': 500,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
             'body': json.dumps({
                 'error': str(e)
             })
-        }
+        })
     
     # Create new booking
     booking_id = f"booking_{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -88,25 +77,38 @@ def handler(event, context):
             }
         )
         
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
-            'body': json.dumps({
+        return respond(None,{
                 'booking_id': booking_id,
                 'message': 'Booking confirmed successfully'
             })
-        }
+    
     except Exception as e:
-        return {
+        return respond(None,{
             'statusCode': 500,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': True,
-            },
             'body': json.dumps({
                 'error': str(e)
             })
-        } 
+        })
+    
+class CustomJsonEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            if float(obj).is_integer():
+                return int(float(obj))
+            else:
+                return float(obj)
+        return super(CustomJsonEncoder, self).default(obj)
+
+# JSON REST output builder method
+def respond(err, res=None):
+    return {
+        "statusCode": "400" if err else res["statusCode"],
+        "body": json.dumps(err) if err else json.dumps(res, cls=CustomJsonEncoder),
+        "headers": {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Credentials": "*",
+        },
+    }

@@ -235,6 +235,16 @@ class ApiGw_Stack(Stack):
         )
         self.add_cors_options(properties_api)
 
+        # Add property upload endpoint
+        upload_image_api = properties_api.add_resource("upload-image")
+        upload_image_api.add_method(
+            'GET',
+            _apigw.LambdaIntegration(property_indexing_lambda),
+            authorizer=cognito_authorizer,
+            authorization_type=_apigw.AuthorizationType.COGNITO
+        )
+        self.add_cors_options(upload_image_api)
+
     def tag_my_stack(self, stack):
         tags = Tags.of(stack)
         tags.add("project", "luxury-property-booking")
