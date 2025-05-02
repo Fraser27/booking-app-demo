@@ -5,6 +5,7 @@ import type { UploadFile } from 'antd/es/upload/interface';
 import config from '../config.json';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { FileUpload } from '@cloudscape-design/components';
+import axios from 'axios';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -68,47 +69,37 @@ const PropertyForm: React.FC = () => {
       };
       const params = new URLSearchParams()
       params.append('file_name', fileList[0].name)
-      params.append('extension', fileList[0].type)
+      params.append('file_extension', fileList[0].type)
       const token = await getAuthToken()
       
-      fetch(`${config.apiUrl}/properties/upload-image?${params.toString()}`, {
-        method: 'GET',
+      const response = await axios.get(`${config.apiUrl}/properties/upload-image?${params.toString()}`, {
         headers: {
           'Authorization': token
         }
-      }).then(function (result) {
-        var formData = new FormData();
-        formData = build_form_data(result['data']['result'], formData)
-        formData.append('file', b64_content[0]);
-        var upload_url = result['data']['result']['url']
-        fetch(upload_url, {
-          method: 'POST',
-          body: formData
-        })
-          .then(function (result) {
-            message.success("File uploaded successfully")
-            propertyData.image_urls.push({ content: result['data']['result']['url'] })
-            fetch(`${config.apiUrl}/properties`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization':  token
-              },
-              body: JSON.stringify({ property: propertyData })
-            }).then(function (result) {
-              message.success('Property created successfully');
-              form.resetFields();
-              setFileList([]);
-              setB64Content([]);
-            }).catch(function (error) {
-              message.error('Failed to create property');
-              console.error('Error:', error);
-            });
-
-          })
       });
 
+      const formData = new FormData();
+      build_form_data(response.data.result, formData);
+      formData.append('file', b64_content[0]);
       
+      await axios.post(response.data.result.url, formData);
+      message.success("File uploaded successfully");
+      
+      propertyData.image_urls.push({ content: response.data.result.url });
+      
+      await axios.post(`${config.apiUrl}/properties`, {
+        property: propertyData
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        }
+      });
+      
+      message.success('Property created successfully');
+      form.resetFields();
+      setFileList([]);
+      setB64Content([]);
     } catch (error) {
       message.error('Failed to create property');
       console.error('Error:', error);

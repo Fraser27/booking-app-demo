@@ -245,7 +245,10 @@ class ApiGw_Stack(Stack):
                     's3:GetObject',
                     's3:GeneratePresignedUrl'
                 ],
-                resources=[f"arn:aws:s3:::{self.node.try_get_context(f'{env_name}')['s3_images_data']}/*"]
+                resources=[
+                    f"arn:aws:s3:::{bucket_name}",
+                    f"arn:aws:s3:::{bucket_name}/*"
+                ]
             )
         )
 

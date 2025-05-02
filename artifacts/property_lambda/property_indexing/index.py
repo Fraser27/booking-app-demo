@@ -97,6 +97,7 @@ def index_property(event):
             
 def create_presigned_post(event):
     # Generate a presigned S3 POST URL
+    LOG.info(f"method=create_presigned_post , event={event}")
     query_params = {}
     if 'queryStringParameters' in event:
         query_params = event['queryStringParameters']
@@ -117,9 +118,9 @@ def create_presigned_post(event):
         file_name = file_name.replace(' ', '_')
         s3_key = f"properties/data/{file_name}.{extension}"
         response = s3_client.generate_presigned_post(Bucket=os.environ['S3_BUCKET'], Key=s3_key)
-        return respond(None, response)
+        return {"success": True, "result": response, "statusCode": "200"}
     else:
-        return respond(None, {'statusCode': 400, 'body': json.dumps({'error': 'Missing file_extension field cannot generate signed url'})})
+        return {'statusCode': 400, 'body': json.dumps({'error': 'Missing file_extension field cannot generate signed url'})}
 
 
 class CustomJsonEncoder(json.JSONEncoder):
