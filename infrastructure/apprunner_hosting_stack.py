@@ -15,56 +15,49 @@ class AppRunnerHostingStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
         
         env_name = self.node.try_get_context("environment_name")
-        env_params = self.node.try_get_context(env_name)
+        config_details = self.node.try_get_context(env_name)
         region=os.getenv('CDK_DEFAULT_REGION')
         account_id = os.getenv('CDK_DEFAULT_ACCOUNT')
+        current_timestamp = self.node.try_get_context('current_timestamp')
+        ecr_repo_name = config_details['ecr_repository_name']
+        # Generate ECR Full repo name
+        full_ecr_repo_name = f'{account_id}.dkr.ecr.{region}.amazonaws.com/{ecr_repo_name}:{current_timestamp}'
+        
 
-        # Create IAM role for AppRunner
-        apprunner_role = _iam.Role(
-            self,
-            f"property-booking-apprunner-role-{env_name}",
-            assumed_by=_iam.ServicePrincipal("tasks.apprunner.amazonaws.com"),
-            description="Role for AppRunner to access ECR and other services"
-        )
+        apprunner_role = _iam.Role(self, f"rag-llm-role-{env_name}",
+                  assumed_by=_iam.ServicePrincipal("build.apprunner.amazonaws.com"),
+                )
+        
+        apprunner_role.add_to_policy(_iam.PolicyStatement(
+                    actions=["ecr:GetDownloadUrlForLayer", "ecr:BatchCheckLayerAvailability",
+                            "ecr:BatchGetImage", "ecr:DescribeImages", "ecr:GetAuthorizationToken"],
+                    resources=["*"],
+                    effect=_iam.Effect.ALLOW
+        ))
 
-        # Add ECR permissions to AppRunner role
-        apprunner_role.add_to_policy(
-            _iam.PolicyStatement(
-                actions=[
-                    "ecr:GetAuthorizationToken",
-                    "ecr:BatchCheckLayerAvailability",
-                    "ecr:GetDownloadUrlForLayer",
-                    "ecr:BatchGetImage"
-                ],
-                resources=["*"]
-            )
-        )
+        
 
         # Create AppRunner service
-        apprunner_service = _apprunner.CfnService(
-            self,
-            f"property-booking-ui-{env_name}",
-            service_name=env_params['apprunner_service_name'],
-            source_configuration=_apprunner.CfnService.SourceConfigurationProperty(
-                authentication_configuration=_apprunner.CfnService.AuthenticationConfigurationProperty(
-                    access_role_arn=apprunner_role.role_arn
-                ),
-                image_repository=_apprunner.CfnService.ImageRepositoryProperty(
-                    image_identifier=f"{account_id}.dkr.ecr.{region}.amazonaws.com/{env_params['ecr_repository_name']}:latest",
-                    image_repository_type="ECR",
-                    image_configuration=_apprunner.CfnService.ImageConfigurationProperty(
-                        port="80",
-                        runtime_environment_variables=[_apprunner.CfnService.KeyValuePairProperty(
+        apprunner_service = _apprunner.CfnService(self, f"property-booking-ui-{env_name}",
+                            instance_configuration=_apprunner.CfnService.InstanceConfigurationProperty(
+                            cpu="2048",
+                            memory="4096"
+                            ),
+                            service_name=config_details['apprunner_service_name'],
+                            source_configuration=_apprunner.CfnService.SourceConfigurationProperty(
+                                auto_deployments_enabled=True,
+                                authentication_configuration=_apprunner.CfnService.AuthenticationConfigurationProperty(
+                                    access_role_arn=apprunner_role.role_arn
+                                ),
+                                image_repository=_apprunner.CfnService.ImageRepositoryProperty(
+                                   image_identifier=full_ecr_repo_name,
+                                   image_repository_type="ECR",
+                                   image_configuration=_apprunner.CfnService.ImageConfigurationProperty(
+                                       port="80", 
+                                       runtime_environment_variables=[_apprunner.CfnService.KeyValuePairProperty(
                                            name="name",
-                                           value="value")]
-                    )
-                )
-            ),
-            instance_configuration=_apprunner.CfnService.InstanceConfigurationProperty(
-                cpu="1 vCPU",
-                memory="2 GB"
-            )
-        )
+                                           value="value")],)))
+                           )
 
         # Output AppRunner service URL
         _cdk.CfnOutput(self, f"property-booking-ui-url-{env_name}", 
