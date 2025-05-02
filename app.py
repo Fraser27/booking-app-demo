@@ -24,7 +24,7 @@ env_name = app.node.try_get_context("environment_name")
 oss_stack = OpensearchVectorDbStack(app, f"PropDb{env_name}")
 tag_my_stack(oss_stack)
 
-prop_layer_stack = PropLayerStack(app, f"PropLayerStack")
+prop_layer_stack = PropLayerStack(app, f"PropLayer{env_name}Stack")
 tag_my_stack(prop_layer_stack)
 
 api_gw_stack = ApiGw_Stack(app, f'PropApis{env_name}Stack')

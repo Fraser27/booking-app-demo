@@ -45,7 +45,7 @@ cdk synth -c environment_name=$infra_env -c current_timestamp=$CURRENT_UTC_TIMES
 
 echo "--- CDK deploy ---"
 cdk deploy -c environment_name=$infra_env -c current_timestamp=$CURRENT_UTC_TIMESTAMP PropDb"$infra_env" --require-approval never
-cdk deploy -c environment_name=$infra_env -c current_timestamp=$CURRENT_UTC_TIMESTAMP PropLayerStack"$infra_env" --require-approval never
+cdk deploy -c environment_name=$infra_env -c current_timestamp=$CURRENT_UTC_TIMESTAMP PropLayer"$infra_env"Stack --require-approval never
 echo "--- Get Build Container ---"
 project=proplambdalayer"$infra_env"
 echo project: $project
