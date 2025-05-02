@@ -8,13 +8,12 @@ from aws_cdk import (
 import aws_cdk as _cdk
 import os
 from constructs import Construct
-import cdk_nag as _cdk_nag
-from cdk_nag import NagSuppressions, NagPackSuppression
+
 
 class AppRunnerHostingStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        self.stack_level_suppressions()
+        
         env_name = self.node.try_get_context("environment_name")
         env_params = self.node.try_get_context(env_name)
         region=os.getenv('CDK_DEFAULT_REGION')
@@ -75,9 +74,3 @@ class AppRunnerHostingStack(Stack):
     def tag_my_stack(self, stack):
         tags = Tags.of(stack)
         tags.add("project", "luxury-property-booking")
-
-    def stack_level_suppressions(self):
-        NagSuppressions.add_stack_suppressions(self, [
-            _cdk_nag.NagPackSuppression(id='AwsSolutions-IAM5', reason='Basic ECR access role'),
-            _cdk_nag.NagPackSuppression(id='AwsSolutions-IAM4', reason='Basic ECR access role')
-        ])

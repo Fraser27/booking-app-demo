@@ -8,13 +8,11 @@ from aws_cdk import (
 import aws_cdk as _cdk
 import os
 from constructs import Construct
-import cdk_nag as _cdk_nag
-from cdk_nag import NagSuppressions, NagPackSuppression
 
 class Storage_Stack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        self.stack_level_suppressions()
+        
         env_name = self.node.try_get_context("environment_name")
         env_params = self.node.try_get_context(env_name)
         region=os.getenv('CDK_DEFAULT_REGION')
@@ -69,10 +67,5 @@ class Storage_Stack(Stack):
         tags = Tags.of(stack)
         tags.add("project", "luxury-property-booking")
 
-    def stack_level_suppressions(self):
-        NagSuppressions.add_stack_suppressions(self, [
-            _cdk_nag.NagPackSuppression(id='AwsSolutions-DDB3', reason='Point in time recovery is enabled'),
-            _cdk_nag.NagPackSuppression(id='AwsSolutions-DDB4', reason='Using PAY_PER_REQUEST billing mode')
-        ])
 
         

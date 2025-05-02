@@ -18,47 +18,12 @@ fi
 echo "Environment: $infra_env"
 
 deployment_region=$(aws ec2 describe-availability-zones --output text --query 'AvailabilityZones[0].RegionName')
-embed_model_id='cohere.embed-english-v3'
 
 printf "$Green Selected region: $deployment_region $NC \n"
-printf "$Green Selected embedding model: $embed_model_id $NC \n"
 
 echo '*************************************************************'
 echo ' '
 
-echo '*************************************************************'
-echo ' '
-
-printf "$Green Do you want to deploy Opensearch Serverless or Just try out Amazon Bedrock: $NC"
-printf "\n"
-options=("Yes - Deploy Amazon Opensearch Serverless vector engine for RAG" "No - I will only test Amazon Bedrock without RAG" "Quit")
-aoss_selected='yes'
-select opt in "${options[@]}"
-do
-    case $opt in
-        "Yes - Deploy Amazon Opensearch Serverless vector engine for RAG")
-            aoss_selected='yes'
-            ;;
-        "No - I will only test Amazon Bedrock without RAG")
-            aoss_selected='no'
-            printf "$Green You can re-run this script to deploy Opensearch Serverless later $NC"
-            ;;
-        "Quit")
-            printf "$Red Quit deployment $NC"
-            exit 1
-            break
-            ;;
-        *)
-        printf "$Red Exiting, Invalid option $REPLY . Select from 1/2/3 $NC"
-        exit 1
-        ;;
-    esac
-    break
-done
-
-echo ' '
-echo '*************************************************************'
-echo ' '
 printf "$Green Press Enter to proceed with deployment else ctrl+c to cancel $NC "
 read -p " "
 
@@ -71,19 +36,17 @@ sudo npm install -g aws-cdk@2.91.0
 echo "--- Bootstrapping CDK on account in region $deployment_region ---"
 cdk bootstrap aws://$(aws sts get-caller-identity --query "Account" --output text)/$deployment_region
 
-cd serverless-rag-demo
+cd booking-app-demo
 echo "--- pip install requirements ---"
 python3 -m pip install -r requirements.txt
 
 echo "--- CDK synthesize ---"
-cdk synth -c environment_name=$infra_env -c current_timestamp=$CURRENT_UTC_TIMESTAMP -c is_aoss=$aoss_selected -c embed_model_id=$embed_model_id
+cdk synth -c environment_name=$infra_env
 
 echo "--- CDK deploy ---"
-CURRENT_UTC_TIMESTAMP=$(date -u +"%Y%m%d%H%M%S")
-echo Setting Tagging Lambda Image with timestamp $CURRENT_UTC_TIMESTAMP
 cdk deploy -c environment_name=$infra_env PropertyBooking"$infra_env"Stack --require-approval never
 echo "--- Get Build Container ---"
-project=lambdaragllmcontainer"$infra_env"
+project=proplambdalayer"$infra_env"
 echo project: $project
 build_container=$(aws codebuild list-projects|grep -o $project'[^,"]*')
 echo container: $build_container
@@ -116,17 +79,13 @@ done
 
 if [ $build_status = "SUCCEEDED" ]
 then
-    COLLECTION_ENDPOINT=https://dummy-vector-endpoint.amazonaws.com
-    if [ $aoss_selected = "yes" ]
-    then
-        COLLECTION_NAME=$(jq '.context.'$infra_env'.collection_name' cdk.json -r)
-        COLLECTION_ENDPOINT=$(aws opensearchserverless batch-get-collection --names $COLLECTION_NAME |jq '.collectionDetails[0]["collectionEndpoint"]' -r)
-    fi
-
+    
+    COLLECTION_NAME=$(jq '.context.'$infra_env'.collection_name' cdk.json -r)
+    COLLECTION_ENDPOINT=$(aws opensearchserverless batch-get-collection --names $COLLECTION_NAME |jq '.collectionDetails[0]["collectionEndpoint"]' -r)
     cdk deploy -c environment_name=$infra_env -c collection_endpoint=$COLLECTION_ENDPOINT PropApis"$infra_env"Stack --require-approval never
     
     echo "---Deploying the UI ---"
-    project=ragllmuicontainer"$infra_env"
+    project=propertybooking"$infra_env"
     echo project: $project
     build_container=$(aws codebuild list-projects|grep -o $project'[^,"]*')
     echo container: $build_container

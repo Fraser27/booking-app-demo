@@ -9,7 +9,6 @@ from aws_cdk import (
 from constructs import Construct
 import os
 import yaml
-import cdk_nag as _cdk_nag
 import aws_cdk as _cdk
 
 # This stack creates the bedrock lambda layers needed for indexing/querying models in Bedrock
@@ -17,14 +16,12 @@ class BedrockLayerStack(NestedStack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        # Aspects.of(self).add(_cdk_nag.AwsSolutionsChecks())
         env_name = self.node.try_get_context('environment_name')
         config_details = self.node.try_get_context(env_name)
         
         addtional_libs_layer_name = config_details["addtional_libs_layer_name"]
         account_id = os.getenv("CDK_DEFAULT_ACCOUNT")
         region = os.getenv("CDK_DEFAULT_REGION")
-        current_timestamp = self.node.try_get_context('current_timestamp')
         
         build_spec_yml = ''
         with open("buildspec_bedrock.yml", "r") as stream:
@@ -57,12 +54,6 @@ class BedrockLayerStack(NestedStack):
         self.suppressor([containerize_build_job], 'AwsSolutions-IAM5', 'We cannot remove wildcard here, as the CodeBuild should have permissions to publish different layer versions')
 
         
-    def suppressor(self, constructs, id, reason):
-        if len(reason) < 10:
-            reason = reason + ' Will work on this at a later date.'
-        _cdk_nag.NagSuppressions.add_resource_suppressions(constructs, [
-            _cdk_nag.NagPackSuppression(id=id, reason=reason)
-        ], apply_to_children=True)
             
         
 

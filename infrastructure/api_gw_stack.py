@@ -12,8 +12,6 @@ from aws_cdk import (
 import aws_cdk as _cdk
 import os
 from constructs import Construct, DependencyGroup
-import cdk_nag as _cdk_nag
-from cdk_nag import NagSuppressions, NagPackSuppression
 
 from infrastructure.apprunner_hosting_stack import AppRunnerHostingStack
 from infrastructure.dynamodb_stack import Storage_Stack
@@ -22,10 +20,8 @@ from infrastructure.ecr_ui_stack import ECRUIStack
 class ApiGw_Stack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        self.stack_level_suppressions()
         env_name = self.node.try_get_context("environment_name")
         env_params = self.node.try_get_context(env_name)
-        current_timestamp = self.node.try_get_context('current_timestamp')
         region=os.getenv('CDK_DEFAULT_REGION')
         account_id = os.getenv('CDK_DEFAULT_ACCOUNT')
         collection_endpoint = 'random'
@@ -272,11 +268,3 @@ class ApiGw_Stack(Stack):
             ],
             authorization_type=_cdk.aws_apigateway.AuthorizationType.NONE
         )
-    
-    def stack_level_suppressions(self):
-        NagSuppressions.add_stack_suppressions(self, [
-            _cdk_nag.NagPackSuppression(id='AwsSolutions-IAM5', reason='Basic lambda execution role'),
-            _cdk_nag.NagPackSuppression(id='AwsSolutions-IAM4', reason='Basic lambda execution role'),
-            _cdk_nag.NagPackSuppression(id='AwsSolutions-APIG4', reason='Using API keys for access control'),
-            _cdk_nag.NagPackSuppression(id='AwsSolutions-COG4', reason='Using API keys for access control')
-        ])
