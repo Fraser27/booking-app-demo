@@ -231,7 +231,7 @@ class ApiGw_Stack(Stack):
                 'REGION': region,
                 'OPENSEARCH_ENDPOINT': collection_endpoint,
                 'INDEX_NAME': env_params['index_name'],
-                'S3_BUCKET': env_params['s3_images_data']
+                'S3_BUCKET': bucket_name
             },
             role=custom_lambda_role,
             layers=[additional_libs_layer]
