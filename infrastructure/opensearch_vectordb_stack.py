@@ -17,82 +17,36 @@ class OpensearchVectorDbStack(Stack):
         env_params = self.node.try_get_context(env_name)
         region=os.getenv('CDK_DEFAULT_REGION')
         account_id = os.getenv('CDK_DEFAULT_ACCOUNT')
-
+        collection_name = env_params['collection_name']
+        lambda_role_arn = f"arn:aws:iam::{account_id}:role/{env_params['lambda_role_name']}_{region}"
+        
         # Create OpenSearch collection
         collection = _aoss.CfnCollection(
             self, 
             f"property-collection-{env_name}",
-            name=env_params['collection_name'],
+            name=collection_name,
             type="SEARCH",
             description="Collection for storing luxury property data"
         )
 
         # Create encryption policy
-        encryption_policy = _aoss.CfnSecurityPolicy(
-            self,
-            f"property-encryption-policy-{env_name}",
-            name=f"property-encryption-policy-{env_name}",
-            type="encryption",
-            policy=f'''{{
-                "Rules": [
-                    {{
-                        "Resource": [
-                            "collection/{env_params['collection_name']}"
-                        ],
-                        "ResourceType": "collection"
-                    }}
-                ],
-                "AWSOwnedKey": true
-            }}'''
-        )
+        encryption_policy = _aoss.CfnSecurityPolicy(self, f'prop-colln-db-encrypt-{env_name}', 
+                                    name=f'prop-colln-db-encrypt-{env_name}',
+                                type='encryption',
+                                policy="""{\"Rules\":[{\"ResourceType\":\"collection\",\"Resource\":[\"collection/"""+ collection_name +"""\"]}],\"AWSOwnedKey\":true}""")
+        
+        network_policy = _aoss.CfnSecurityPolicy(self, f'prop-colln-nw-{env_name}', 
+                                                name=f'prop-colln-nw-{env_name}',
+                                type='network',
+                                policy="""[{\"Rules\":[{\"ResourceType\":\"collection\",\"Resource\":[\"collection/"""+ collection_name + """\"]}, {\"ResourceType\":\"dashboard\",\"Resource\":[\"collection/"""+ collection_name + """\"]}],\"AllowFromPublic\":true}]""")
 
-        # Create network policy
-        network_policy = _aoss.CfnSecurityPolicy(
-            self,
-            f"property-network-policy-{env_name}",
-            name=f"property-network-policy-{env_name}",
-            type="network",
-            policy=f'''{{
-                "Rules": [
-                    {{
-                        "Resource": [
-                            "collection/{env_params['collection_name']}"
-                        ],
-                        "ResourceType": "collection"
-                    }}
-                ],
-                "AllowFromPublic": true
-            }}'''
-        )
-
-        # Create data access policy
-        data_access_policy = _aoss.CfnAccessPolicy(
-            self,
-            f"property-data-access-policy-{env_name}",
-            name=f"property-data-access-policy-{env_name}",
-            type="data",
-            policy=f'''[
-                {{
-                    "Rules": [
-                        {{
-                            "Resource": [
-                                "collection/{env_params['collection_name']}"
-                            ],
-                            "Permission": [
-                                "aoss:CreateCollectionItems",
-                                "aoss:DeleteCollectionItems",
-                                "aoss:UpdateCollectionItems",
-                                "aoss:DescribeCollectionItems"
-                            ],
-                            "ResourceType": "collection"
-                        }}
-                    ],
-                    "Principal": [
-                        "arn:aws:iam::{account_id}:root"
-                    ]
-                }}
-            ]'''
-        )
+        data_access_policy = _aoss.CfnAccessPolicy(self, f'prop-colln-data-{env_name}', name=f'prop-colln-data-{env_name}',
+                                type='data',
+                                policy="""[{\"Rules\":[{\"ResourceType\":\"index\",\"Resource\":[\"index/"""+ collection_name +"""/*\"], \"Permission\": [\"aoss:*\"]}, {\"ResourceType\":\"collection\",\"Resource\":[\"collection/"""+ collection_name +"""\"], \"Permission\": [\"aoss:*\"]}], \"Principal\": [\"""" + lambda_role_arn + """\", \"arn:aws:iam::"""+ account_id +""":root\"]}]""")
+        
+        
+        
+        
 
         # Add dependencies
         collection.add_dependency(encryption_policy)
