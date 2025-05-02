@@ -4,7 +4,9 @@ import { AppLayout, TopNavigation, SideNavigation, Badge, Alert } from '@cloudsc
 import { Hub } from 'aws-amplify/utils';
 import { signOut } from 'aws-amplify/auth';
 import { AppContext } from "./common/context";
-import { NotFound, ChatPage, AgentPage, OcrPage, SentimentPage, HomePage, Help, PIIPage } from './pages'
+import { NotFound, HomePage, Help } from './pages'
+import PropertySearchPage from './pages/PropertySearchPage';
+import ManagePropertiesPage from './pages/ManagePropertiesPage';
 import '@aws-amplify/ui-react/styles.css';
 
 export default function App() {
@@ -52,7 +54,7 @@ export default function App() {
       <div id="custom-main-header" style={{ position: 'sticky', top: 0, zIndex: 1002 }}><TopNavigation
         identity={{
           href: '#',
-          title: 'Serverless Rag Demo',
+          title: 'Property Booking Assistant',
         }}
 
         utilities={[
@@ -87,7 +89,7 @@ export default function App() {
         notifications={(notificationVisible) ? <Alert dismissible statusIconAriaLabel="Warning" type="warning" onDismiss={() => setNotificationVisible(false)}>{notificationMsg}</Alert> : ""}
         navigation={<SideNavigation
           activeHref={activeHref}
-          header={{ href: "#/", text: "Apps" }}
+          header={{ href: "#/", text: "Property Booking" }}
           onFollow={event => {
             if (!event.detail.external) {
               setActiveHref(event.detail.href);
@@ -95,27 +97,22 @@ export default function App() {
           }}
           items={[
             {
-              type: "link-group", text: "Document Chat", href: "#/document-chat",
+              type: "link-group", text: "Property Search", href: "#/property-search",
               items: [
-                { type: "link", text: "Manage Documents", href: "#/document-chat/manage-document" },
+                { type: "link", text: "Manage Properties", href: "#/property-search/manage" },
               ]
             },
-            { type: "link", text: "Multi-Agent", href: "#/multi-agent" },
-            { type: "link", text: "Sentiment Analysis", href: "#/sentiment-analysis" },
-            { type: "link", text: "OCR", href: "#/ocr" },
-            { type: "link", text: "PII Identification", href: "#/pii" },
+            { type: "link", text: "Bookings", href: "#/bookings" },
+            { type: "link", text: "Reviews", href: "#/reviews" },
+            { type: "link", text: "Customer Support", href: "#/support" },
           ]}
         />}
         content={
           <Router>
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/document-chat" element={<ChatPage setAppData={setAppData} manageDocument={false} />} />
-              <Route path="/document-chat/manage-document" element={<ChatPage setAppData={setAppData} manageDocument={true} />} />
-              <Route path="/sentiment-analysis" element={<SentimentPage setAppData={setAppData} />} />
-              <Route path="/multi-agent" element={<AgentPage setAppData={setAppData} />} />
-              <Route path="/ocr" element={<OcrPage setAppData={setAppData} />} />
-              <Route path="/pii" element={<PIIPage setAppData={setAppData} />} />
+              <Route path="/property-search" element={<PropertySearchPage />} />
+              <Route path="/property-search/manage" element={<ManagePropertiesPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Router>

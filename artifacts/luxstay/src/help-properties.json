@@ -1,0 +1,30 @@
+{
+    "home": {
+        "title": "Property Booking Assistant",
+        "description" : "Welcome to the Property Booking Assistant. This application helps you search, book, and manage property rentals. You can browse available properties, make bookings, read reviews, and get customer support."
+    },
+    "404": {
+        "title": "Not Found",
+        "description" : "<b>You have landed on wrong page</b>"
+    },
+    "property-search":{
+        "title":"Property Search",
+        "description":"Search and browse available properties. Filter by location, price range, amenities, and more. View detailed property information and photos."
+    },
+    "property-search-manage":{
+        "title":"Manage Properties",
+        "description": "Add, edit, or remove property listings. Update availability, pricing, and property details."
+    },
+    "bookings": {
+        "title": "Bookings",
+        "description" : "View and manage your property bookings. Check availability, make reservations, and manage your upcoming stays."
+    },
+    "reviews": {
+        "title": "Reviews",
+        "description" : "Read and write property reviews. Share your experience and help others make informed decisions."
+    },
+    "support": {
+        "title": "Customer Support",
+        "description" : "Get help with your bookings, property listings, or any other questions. Our support team is here to assist you."
+    }
+}

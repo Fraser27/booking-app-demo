@@ -1,0 +1,205 @@
+// Color palette
+$primary: #2C3E50;
+$secondary: #E5B88E;
+$accent: #C4A77D;
+$background: #F8F5F0;
+$text: #333333;
+$white: #FFFFFF;
+$success: #27AE60;
+$error: #E74C3C;
+
+// Typography
+$font-primary: 'Playfair Display', serif;
+$font-secondary: 'Montserrat', sans-serif;
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin card-shadow {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+}
+
+// Global styles
+body {
+  font-family: $font-secondary;
+  background-color: $background;
+  color: $text;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-primary;
+  color: $primary;
+}
+
+// Navigation
+.top-navigation {
+  background-color: $white;
+  border-bottom: 1px solid rgba($primary, 0.1);
+  
+  .logo {
+    font-family: $font-primary;
+    font-size: 1.5rem;
+    color: $primary;
+  }
+}
+
+.side-navigation {
+  background-color: $white;
+  border-right: 1px solid rgba($primary, 0.1);
+  
+  .nav-item {
+    padding: 1rem;
+    color: $text;
+    transition: background-color 0.3s ease;
+    
+    &:hover {
+      background-color: rgba($secondary, 0.1);
+    }
+    
+    &.active {
+      background-color: rgba($secondary, 0.2);
+      border-left: 4px solid $secondary;
+    }
+  }
+}
+
+// Property cards
+.property-card {
+  @include card-shadow;
+  background: $white;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  
+  .property-image {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .property-details {
+    padding: 1.5rem;
+    
+    .price {
+      color: $secondary;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .location {
+      color: $primary;
+      font-size: 1.1rem;
+    }
+    
+    .amenities {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      
+      span {
+        background: rgba($secondary, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+// Booking form
+.booking-form {
+  background: $white;
+  padding: 2rem;
+  border-radius: 8px;
+  @include card-shadow;
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: $primary;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid rgba($primary, 0.2);
+      border-radius: 4px;
+      transition: border-color 0.3s ease;
+      
+      &:focus {
+        border-color: $secondary;
+        outline: none;
+      }
+    }
+  }
+  
+  .submit-button {
+    background: $secondary;
+    color: $white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    
+    &:hover {
+      background: darken($secondary, 10%);
+    }
+  }
+}
+
+// Reviews section
+.reviews-section {
+  .review-card {
+    background: $white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    @include card-shadow;
+    
+    .rating {
+      color: $secondary;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .review-text {
+      color: $text;
+      line-height: 1.6;
+    }
+    
+    .reviewer {
+      margin-top: 1rem;
+      color: $primary;
+      font-weight: bold;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .property-card {
+    .property-image {
+      height: 150px;
+    }
+  }
+  
+  .booking-form {
+    padding: 1.5rem;
+  }
+} 

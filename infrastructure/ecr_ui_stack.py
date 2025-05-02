@@ -39,7 +39,7 @@ class ECRUIStack(NestedStack):
         # Step 1 load the cognitoUserPool from domain
         # Step 2 inject the clientID/PoolID in the config.json file in the nodejs application
         # print(f'Injecting clientID {app_client_id} and PoolID {user_pool_id} in config.json') 
-        # with open("artifacts/chat-ui/src/config.json", "wb") as f:
+        # with open("artifacts/luxstay/src/config.json", "wb") as f:
         #     try:
         #             data = json.load(f)
         #             data['region']=region

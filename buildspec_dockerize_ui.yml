@@ -20,10 +20,10 @@ phases:
       - git clone https://github.com/aws-samples/serverless-rag-demo.git
       - ls
       - cd serverless-rag-demo
-      - jq -n --arg region "$region" --arg user_pool_id "$user_pool_id" --arg client_id "$client_id" --arg rest_endpoint_url $rest_endpoint_url '{ region:$region, userPoolId:$user_pool_id, clientId:$client_id, apiUrl:$rest_endpoint_url }' > artifacts/chat-ui/src/config.json
+      - jq -n --arg region "$region" --arg user_pool_id "$user_pool_id" --arg client_id "$client_id" --arg rest_endpoint_url $rest_endpoint_url '{ region:$region, userPoolId:$user_pool_id, clientId:$client_id, apiUrl:$rest_endpoint_url }' > artifacts/luxstay/src/config.json
       - echo Build started on `date`
       - echo Building the Docker image ...
-      - cd artifacts/chat-ui/
+      - cd artifacts/luxstay/
       - ls
       - docker build -t $ecr_repo .
       - docker images

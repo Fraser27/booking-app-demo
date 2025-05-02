@@ -1,0 +1,43 @@
+{
+    "property-booking": {
+        "config": {
+            "models": [
+                {
+                    "label": "Claude 3.7 Sonnet",
+                    "value": "us.anthropic.claude-3-7-sonnet-20250219-v1:0",
+                    "iconName": "keyboard",
+                    "description": "Property booking assistant | Context size = up to 200k",
+                    "tags": [
+                        "Anthropic"
+                    ],
+                    "labelTag": "Property Assistant"
+                }
+            ],
+            "languages": [
+                {
+                    "label": "English",
+                    "value": "english"
+                },
+                {
+                    "label": "Spanish",
+                    "value": "spanish"
+                },
+                {
+                    "label": "French",
+                    "value": "french"
+                },
+                {
+                    "label": "German",
+                    "value": "german"
+                }
+            ]
+        }
+    },
+    "reviews" : {
+        "defaultReview" : "I recently stayed at the Lakeside Villa and had an amazing experience. The property was exactly as described, with beautiful views of the lake and all the amenities we needed. The host was very responsive and helpful throughout our stay. The location was perfect - close to the city center but still peaceful and quiet. I would definitely recommend this property to anyone looking for a relaxing getaway.",
+        "defaultSentiment": "{\n\"sentiment\": \"positive\"\n }"
+    },
+    "property-search" : {
+        "defaultSearchPlaceholder" : "Search for properties by location, price range, or amenities"
+    }
+}

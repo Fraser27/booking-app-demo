@@ -5,7 +5,7 @@
 Cloudscape is an open source design system for the cloud. Cloudscape offers user interface guidelines, front-end components, design resources, and development tools for building intuitive, engaging, and inclusive user experiences at scale.
 
 
-![sample](../assets/chat-ui-vite.png "Screenshot")
+![sample](../assets/luxstay-vite.png "Screenshot")
 
 
 ## Vite.js
@@ -18,7 +18,7 @@ Vite.js is a modern, fast front-end build tool that significantly improves the d
 1. Clone this repository to your local machine
 ```bash
 git clone https://github.com/aws-samples/cloudscape-examples
-cd cloudscape-examples/chat-ui-vite
+cd cloudscape-examples/luxstay-vite
 ```
 2. Install the project dependencies by running:
 ```bash

@@ -190,6 +190,7 @@ class ApiGw_Stack(Stack):
         # Create property indexing Lambda function
         property_indexing_lambda = _lambda.Function(
             self, 'PropertyIndexingLambda',
+            function_name=f'property-index-{env_name}',
             runtime=_lambda.Runtime.PYTHON_3_10,
             handler='index.handler',
             code=_lambda.Code.from_asset('artifacts/property_lambda/property_indexing'),
@@ -232,6 +233,7 @@ class ApiGw_Stack(Stack):
             authorizer=cognito_authorizer,
             authorization_type=_apigw.AuthorizationType.COGNITO
         )
+        self.add_cors_options(properties_api)
 
     def tag_my_stack(self, stack):
         tags = Tags.of(stack)
