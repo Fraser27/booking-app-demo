@@ -20,11 +20,8 @@ class BedrockLayerStack(NestedStack):
         # Aspects.of(self).add(_cdk_nag.AwsSolutionsChecks())
         env_name = self.node.try_get_context('environment_name')
         config_details = self.node.try_get_context(env_name)
-        langchainpy_layer_name = config_details['langchainpy_layer_name']
+        
         addtional_libs_layer_name = config_details["addtional_libs_layer_name"]
-        agentic_libs_layer_name = config_details["agentic_libs_layer_name"]
-        pypdf_layer_name = config_details["pypdf_layer"]
-
         account_id = os.getenv("CDK_DEFAULT_ACCOUNT")
         region = os.getenv("CDK_DEFAULT_REGION")
         current_timestamp = self.node.try_get_context('current_timestamp')
@@ -47,11 +44,9 @@ class BedrockLayerStack(NestedStack):
             privileged=True,
             environment_variables={
                 "addtional_libs_layer_name": _codebuild.BuildEnvironmentVariable(value = addtional_libs_layer_name),
-                "agentic_libs_layer_name": _codebuild.BuildEnvironmentVariable(value = agentic_libs_layer_name),
-                "langchainpy_layer_name":  _codebuild.BuildEnvironmentVariable(value = langchainpy_layer_name),
                 "account_id" : _codebuild.BuildEnvironmentVariable(value = account_id),
                 "region": _codebuild.BuildEnvironmentVariable(value = region),
-                "pypdf_layer_name": _codebuild.BuildEnvironmentVariable(value = pypdf_layer_name) 
+                
             })
         )
 

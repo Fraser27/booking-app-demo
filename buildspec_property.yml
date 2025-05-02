@@ -1,0 +1,22 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+      python: '3.10'
+    commands:
+      - pwd
+      - ls
+      - echo Printing variables $account_id $region
+  build:
+    commands:
+      - echo Build property lambda layer
+      - mkdir python
+      - python3 -m pip install requests-aws4auth opensearch-py boto3 -t python/
+      - zip -r property_libs.zip python
+      - aws lambda publish-layer-version --layer-name $addtional_libs_layer_name --zip-file fileb://property_libs.zip --compatible-runtimes python3.10 python3.9 python3.11 --region $region --description "Property Management Libraries"
+      - rm -rf python property_libs.zip
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      

@@ -1,95 +1,51 @@
 import json
 from aws_cdk import (
-    NestedStack,
     Stack,
-    aws_apprunner as _runner,
+    Tags,
     aws_ecr as _ecr,
-    aws_cognito as _cognito,
-    aws_codebuild as _codebuild,
-    aws_iam as _iam)
+    RemovalPolicy
+)
 
-from constructs import Construct
-import os
-import yaml
 import aws_cdk as _cdk
+import os
+from constructs import Construct
+import cdk_nag as _cdk_nag
+from cdk_nag import NagSuppressions, NagPackSuppression
 
 # This stack will dockerize the latest UI build and upload it to ECR
-class ECRUIStack(NestedStack):
+class ECRUIStack(Stack):
 
-    def __init__(self, scope: Construct, construct_id: str, pool_id: str, client_id: str, rest_endpoint_url, streaming_url, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, user_pool_id: str, user_pool_client_id: str, rest_endpoint_url: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        # Aspects.of(self).add(_cdk_nag.AwsSolutionsChecks())
-        env_name = self.node.try_get_context('environment_name')
-        config_details = self.node.try_get_context(env_name)
-        
-        ecr_repo_name = config_details['ecr_repository_name']
-        account_id = os.getenv("CDK_DEFAULT_ACCOUNT")
-        region = os.getenv("CDK_DEFAULT_REGION")
-        current_timestamp = self.node.try_get_context('current_timestamp')
+        self.stack_level_suppressions()
+        env_name = self.node.try_get_context("environment_name")
+        env_params = self.node.try_get_context(env_name)
+        region=os.getenv('CDK_DEFAULT_REGION')
+        account_id = os.getenv('CDK_DEFAULT_ACCOUNT')
 
-        # Generate ECR Full repo name
-        full_ecr_repo_name = f'{account_id}.dkr.ecr.{region}.amazonaws.com/{ecr_repo_name}:{current_timestamp}'
-        
-        ecr_repo_ui = _ecr.Repository(self,
-                                    ecr_repo_name, 
-                                    repository_name=ecr_repo_name,
-                                    removal_policy=_cdk.RemovalPolicy.DESTROY, auto_delete_images=True)
-        
-        ecr_repo_ui.add_lifecycle_rule(tag_status=_ecr.TagStatus.ANY, max_image_count=10)
-        ecr_repo_ui.add_lifecycle_rule(tag_status=_ecr.TagStatus.UNTAGGED, max_image_age=_cdk.Duration.days(1))
-
-        # Before launching the buildspec
-        # Step 1 load the cognitoUserPool from domain
-        # Step 2 inject the clientID/PoolID in the config.json file in the nodejs application
-        # print(f'Injecting clientID {app_client_id} and PoolID {user_pool_id} in config.json') 
-        # with open("artifacts/chat-ui/src/config.json", "wb") as f:
-        #     try:
-        #             data = json.load(f)
-        #             data['region']=region
-        #             data['userPoolId']=user_pool_id
-        #             data['clientId']=app_client_id
-        #             f.seek(0)
-        #             json.dump(data, f, indent=4)
-        #             # f.truncate() 
-        #     except Exception as e:
-        #             print(e)
-        
-        build_spec_yml = ''
-        with open("buildspec_dockerize_ui.yml", "r") as stream:
-                try:
-                    build_spec_yml = yaml.safe_load(stream)
-                except yaml.YAMLError as exc:
-                    print(exc)
-
-        # Trigger CodeBuild job
-        containerize_build_job =_codebuild.Project(
-            self,
-            f"rag_llm_ui_container_{env_name}",
-            build_spec=_codebuild.BuildSpec.from_object_to_yaml(build_spec_yml),
-            environment = _codebuild.BuildEnvironment(
-            build_image=_codebuild.LinuxBuildImage.STANDARD_6_0,
-            privileged=True,
-            environment_variables={
-                "ecr_repo": _codebuild.BuildEnvironmentVariable(value = full_ecr_repo_name),
-                "account_id" : _codebuild.BuildEnvironmentVariable(value = os.getenv("CDK_DEFAULT_ACCOUNT")),
-                "region": _codebuild.BuildEnvironmentVariable(value = os.getenv("CDK_DEFAULT_REGION")),
-                "user_pool_id": _codebuild.BuildEnvironmentVariable(value = pool_id),
-                "client_id": _codebuild.BuildEnvironmentVariable(value = client_id),
-                "rest_endpoint_url": _codebuild.BuildEnvironmentVariable(value = rest_endpoint_url),
-                "streaming_url": _codebuild.BuildEnvironmentVariable(value = streaming_url)
-            })
+        # Create ECR repository for UI
+        ecr_repository = _ecr.Repository(
+            self, 
+            f"property-booking-ui-{env_name}",
+            repository_name=env_params['ecr_repository_name'],
+            removal_policy=RemovalPolicy.DESTROY,
+            auto_delete_images=True
         )
 
+        # Output ECR repository URI
+        _cdk.CfnOutput(self, f"property-booking-ui-ecr-uri-{env_name}", 
+                      value=ecr_repository.repository_uri,
+                      export_name="ecr-repository-uri")
 
-        ecr_policy = _iam.PolicyStatement(actions=[
-        "ecr:BatchCheckLayerAvailability", "ecr:CompleteLayerUpload", "ecr:GetAuthorizationToken",
-        "ecr:InitiateLayerUpload", "ecr:PutImage", "ecr:UploadLayerPart", "ecr:CreateRepository",
-        ], resources=["*"])
-        containerize_build_job.add_to_role_policy(ecr_policy)
-        
+    def tag_my_stack(self, stack):
+        tags = Tags.of(stack)
+        tags.add("project", "luxury-property-booking")
+
+    def stack_level_suppressions(self):
+        NagSuppressions.add_stack_suppressions(self, [
+            _cdk_nag.NagPackSuppression(id='AwsSolutions-ECR1', reason='Repository is used for development'),
+            _cdk_nag.NagPackSuppression(id='AwsSolutions-ECR2', reason='Repository is used for development')
+        ])
 
 
-        
-
-        
         
