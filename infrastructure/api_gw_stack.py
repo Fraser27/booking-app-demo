@@ -6,7 +6,9 @@ from aws_cdk import (
     aws_ecr as _ecr, 
     aws_s3 as _s3,
     aws_cognito as _cognito,
-    aws_apigateway as _apigw
+    aws_apigateway as _apigw,
+    RemovalPolicy,
+    Duration
 )
 
 import aws_cdk as _cdk
@@ -71,6 +73,37 @@ class ApiGw_Stack(Stack):
                                                                             authorizer_name=env_params["booking-cognito"])
 
         bucket_name = f'{env_params["s3_images_data"]}-{account_id}-{region}'
+
+        # Create S3 bucket for property images
+        images_bucket = _s3.Bucket(
+            self,
+            f"property-images-bucket-{env_name}",
+            bucket_name=bucket_name,
+            versioned=True,
+            encryption=_s3.BucketEncryption.S3_MANAGED,
+            block_public_access=_s3.BlockPublicAccess.BLOCK_ALL,
+            removal_policy=RemovalPolicy.RETAIN,
+            lifecycle_rules=[
+                _s3.LifecycleRule(
+                    expiration=Duration.days(365),  # Keep images for 1 year
+                    transitions=[
+                        _s3.Transition(
+                            storage_class=_s3.StorageClass.INFREQUENT_ACCESS,
+                            transition_after=Duration.days(90)  # Move to IA after 90 days
+                        )
+                    ]
+                )
+            ],
+            cors=[
+                _s3.CorsRule(
+                    allowed_methods=[_s3.HttpMethods.GET, _s3.HttpMethods.PUT, _s3.HttpMethods.POST],
+                    allowed_origins=["*"],  # In production, replace with specific origins
+                    allowed_headers=["*"],
+                    exposed_headers=["ETag"],
+                    max_age=3000
+                )
+            ]
+        )
 
         # Define API
         api_description = "Luxury Property Booking API"
