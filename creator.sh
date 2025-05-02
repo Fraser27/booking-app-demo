@@ -39,12 +39,13 @@ cdk bootstrap aws://$(aws sts get-caller-identity --query "Account" --output tex
 cd booking-app-demo
 echo "--- pip install requirements ---"
 python3 -m pip install -r requirements.txt
-
+CURRENT_UTC_TIMESTAMP=$(date -u +"%Y%m%d%H%M%S")
 echo "--- CDK synthesize ---"
-cdk synth -c environment_name=$infra_env
+cdk synth -c environment_name=$infra_env -c current_timestamp=$CURRENT_UTC_TIMESTAMP
 
 echo "--- CDK deploy ---"
-cdk deploy -c environment_name=$infra_env PropertyBooking"$infra_env"Stack --require-approval never
+cdk deploy -c environment_name=$infra_env -c current_timestamp=$CURRENT_UTC_TIMESTAMP PropDb"$infra_env" --require-approval never
+cdk deploy -c environment_name=$infra_env -c current_timestamp=$CURRENT_UTC_TIMESTAMP PropLayerStack"$infra_env" --require-approval never
 echo "--- Get Build Container ---"
 project=proplambdalayer"$infra_env"
 echo project: $project
@@ -82,7 +83,7 @@ then
     
     COLLECTION_NAME=$(jq '.context.'$infra_env'.collection_name' cdk.json -r)
     COLLECTION_ENDPOINT=$(aws opensearchserverless batch-get-collection --names $COLLECTION_NAME |jq '.collectionDetails[0]["collectionEndpoint"]' -r)
-    cdk deploy -c environment_name=$infra_env -c collection_endpoint=$COLLECTION_ENDPOINT PropApis"$infra_env"Stack --require-approval never
+    cdk deploy -c environment_name=$infra_env -c collection_endpoint=$COLLECTION_ENDPOINT -c current_timestamp=$CURRENT_UTC_TIMESTAMP PropApis"$infra_env"Stack --require-approval never
     
     echo "---Deploying the UI ---"
     project=propertybooking"$infra_env"
@@ -119,7 +120,7 @@ then
     if [ $build_status = "SUCCEEDED" ]
     then
        echo "Host UI on AppRunner..."
-       cdk deploy -c environment_name=$infra_env -c collection_endpoint=$COLLECTION_ENDPOINT PropRunnerHosting"$infra_env"Stack --require-approval never
+       cdk deploy -c environment_name=$infra_env -c collection_endpoint=$COLLECTION_ENDPOINT -c current_timestamp=$CURRENT_UTC_TIMESTAMP PropRunnerHosting"$infra_env"Stack --require-approval never
     else
        echo "Exiting. Build did not succeed."
        exit 1

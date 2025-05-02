@@ -1,5 +1,6 @@
 from aws_cdk import (
     NestedStack,
+    Stack,
     aws_lambda as _lambda,
     aws_iam as _iam,
     aws_codebuild as _codebuild,
@@ -11,8 +12,8 @@ import os
 import yaml
 import aws_cdk as _cdk
 
-# This stack creates the bedrock lambda layers needed for indexing/querying models in Bedrock
-class BedrockLayerStack(NestedStack):
+# This stack creates the  lambda layers needed for indexing/querying O
+class PropLayerStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -24,7 +25,7 @@ class BedrockLayerStack(NestedStack):
         region = os.getenv("CDK_DEFAULT_REGION")
         
         build_spec_yml = ''
-        with open("buildspec_bedrock.yml", "r") as stream:
+        with open("buildspec_property.yml", "r") as stream:
             try:
                 build_spec_yml = yaml.safe_load(stream)
             except yaml.YAMLError as exc:
@@ -34,7 +35,7 @@ class BedrockLayerStack(NestedStack):
         # Trigger CodeBuild job
         containerize_build_job =_codebuild.Project(
             self,
-            f"lambda_rag_llm_container_{env_name}",
+            f"proplambdalayer{env_name}",
             build_spec=_codebuild.BuildSpec.from_object_to_yaml(build_spec_yml),
             environment = _codebuild.BuildEnvironment(
             build_image=_codebuild.LinuxBuildImage.STANDARD_6_0,
@@ -51,7 +52,7 @@ class BedrockLayerStack(NestedStack):
         "lambda:PublishLayerVersion"
         ], resources=["*"])
         containerize_build_job.add_to_role_policy(lambda_layer_policy)
-        self.suppressor([containerize_build_job], 'AwsSolutions-IAM5', 'We cannot remove wildcard here, as the CodeBuild should have permissions to publish different layer versions')
+        
 
         
             
