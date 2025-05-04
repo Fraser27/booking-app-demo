@@ -4,7 +4,7 @@ import { getBookings, cancelBooking, Booking } from '../services/bookingService'
 import '../styles/LuxstayTheme.css';
 import dayjs from 'dayjs';
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 const UserBookings: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -51,52 +51,39 @@ const UserBookings: React.FC = () => {
   };
 
   return (
-    <div className="luxstay-container">
+    <div className="luxstay-booking-container">
+      <Title level={2} className="luxstay-booking-header">My Bookings</Title>
       <Card 
-        title="My Bookings" 
         loading={loading}
-        className="luxstay-card luxstay-fade-in"
+        className="luxstay-booking-card"
+        bodyStyle={{ padding: 0 }}
       >
         <List
           dataSource={bookings}
           renderItem={(booking) => (
-            <List.Item
-              className="luxstay-fade-in"
-              actions={[
-                booking.status === 'confirmed' && (
+            <List.Item className="luxstay-booking-item">
+              <div style={{ width: '100%' }}>
+                <div className="luxstay-booking-id">
+                  Booking #{booking.booking_id.slice(8)}
+                </div>
+                <div className="luxstay-booking-dates">
+                  {dayjs.unix(booking.check_in).format('MMM D, YYYY')} - {dayjs.unix(booking.check_out).format('MMM D, YYYY')}
+                </div>
+                <div className="luxstay-booking-price">
+                  Total Price: ${booking.total_price}
+                </div>
+                <div className={`luxstay-booking-status ${booking.status}`}>
+                  {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                </div>
+                {booking.status === 'confirmed' && (
                   <Button
-                    danger
-                    className="luxstay-button"
+                    className="luxstay-booking-cancel-btn"
                     onClick={() => handleCancel(booking.booking_id)}
                   >
                     Cancel Booking
                   </Button>
-                )
-              ].filter(Boolean)}
-            >
-              <List.Item.Meta
-                title={
-                  <Text strong className="luxstay-property-price">
-                    Booking #{booking.booking_id.slice(0, 8)}
-                  </Text>
-                }
-                description={
-                  <Space direction="vertical" className="luxstay-property-details">
-                    <Text>
-                      <span className="luxstay-property-location">Dates:</span>{' '}
-                      {dayjs.unix(booking.check_in).format('MMM D, YYYY')} - {dayjs.unix(booking.check_out).format('MMM D, YYYY')}
-                    </Text>
-                    <Text>
-                      <span className="luxstay-property-location">Total Price:</span>{' '}
-                      ${booking.total_price}
-                    </Text>
-                    <Text type={getStatusColor(booking.status)}>
-                      <span className="luxstay-property-location">Status:</span>{' '}
-                      {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                    </Text>
-                  </Space>
-                }
-              />
+                )}
+              </div>
             </List.Item>
           )}
         />
