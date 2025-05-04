@@ -1,4 +1,4 @@
-import { fetchAuthSession } from 'aws-amplify/auth';
+import { fetchAuthSession, getCurrentUser } from 'aws-amplify/auth';
 import config from '../config.json';
 
 export interface Booking {
@@ -23,7 +23,7 @@ export const createBooking = async (bookingData: CreateBookingRequest): Promise<
   const { tokens } = await fetchAuthSession();
   const token = tokens?.idToken?.toString();
 
-  const response = await fetch(`${config.apiUrl}/bookings`, {
+  const response = await fetch(`${config.apiUrl}/properties/booking`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -42,8 +42,11 @@ export const createBooking = async (bookingData: CreateBookingRequest): Promise<
 export const getBookings = async (): Promise<Booking[]> => {
   const { tokens } = await fetchAuthSession();
   const token = tokens?.idToken?.toString();
-
-  const response = await fetch(`${config.apiUrl}/bookings`, {
+  // I want to get the user id from the token
+  const user = await getCurrentUser();
+  const userId = user.username;
+  // I want to use the userIID as a query paramater in the get request
+  const response = await fetch(`${config.apiUrl}/properties/booking?user_id=${userId}`, {
     headers: {
       'Authorization': token || ''
     }
@@ -59,8 +62,9 @@ export const getBookings = async (): Promise<Booking[]> => {
 export const cancelBooking = async (bookingId: string): Promise<void> => {
   const { tokens } = await fetchAuthSession();
   const token = tokens?.idToken?.toString();
+  
 
-  const response = await fetch(`${config.apiUrl}/bookings/${bookingId}/cancel`, {
+  const response = await fetch(`${config.apiUrl}/properties/booking/${bookingId}/cancel`, {
     method: 'POST',
     headers: {
       'Authorization': token || ''

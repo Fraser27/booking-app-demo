@@ -1,5 +1,6 @@
 from aws_cdk import (
     Stack,
+    NestedStack,
     Tags,
     aws_dynamodb as _dynamodb,
     RemovalPolicy
@@ -9,7 +10,7 @@ import aws_cdk as _cdk
 import os
 from constructs import Construct
 
-class Storage_Stack(Stack):
+class Storage_Stack(NestedStack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
         
