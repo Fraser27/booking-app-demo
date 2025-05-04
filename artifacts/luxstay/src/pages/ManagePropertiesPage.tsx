@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Card, Button, Space, Typography, Upload, message, Row, Col } from 'antd';
 import { UploadOutlined, FileAddOutlined, CloudUploadOutlined } from '@ant-design/icons';
 import type { UploadFile } from 'antd/es/upload/interface';
-import PropertyForm from '../components/PropertyForm'
 import config from '../config.json';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { withAuthenticator } from '@aws-amplify/ui-react';
+import PropertyForm from '../components/PropertyForm'
 import '../styles/LuxstayTheme.css';
 
 const { Title, Paragraph } = Typography;

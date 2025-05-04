@@ -3,6 +3,7 @@ import { Form, DatePicker, Button, message, Card, Input, InputNumber } from 'ant
 import { createBooking } from '../services/bookingService';
 import { getCurrentUser } from 'aws-amplify/auth';
 import dayjs from 'dayjs';
+import '../styles/LuxstayTheme.css';
 
 interface BookingFormProps {
   propertyId: string;

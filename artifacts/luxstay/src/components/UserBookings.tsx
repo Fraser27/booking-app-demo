@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, List, Button, message, Typography, Space } from 'antd';
 import { getBookings, cancelBooking, Booking } from '../services/bookingService';
+import '../styles/LuxstayTheme.css';
 import dayjs from 'dayjs';
 
 const { Text } = Typography;
@@ -50,42 +51,57 @@ const UserBookings: React.FC = () => {
   };
 
   return (
-    <Card title="My Bookings" loading={loading}>
-      <List
-        dataSource={bookings}
-        renderItem={(booking) => (
-          <List.Item
-            actions={[
-              booking.status === 'confirmed' && (
-                <Button
-                  danger
-                  onClick={() => handleCancel(booking.id)}
-                >
-                  Cancel Booking
-                </Button>
-              )
-            ].filter(Boolean)}
-          >
-            <List.Item.Meta
-              title={`Booking #${booking.id.slice(0, 8)}`}
-              description={
-                <Space direction="vertical">
-                  <Text>
-                    Dates: {dayjs(booking.startDate).format('MMM D, YYYY')} - {dayjs(booking.endDate).format('MMM D, YYYY')}
+    <div className="luxstay-container">
+      <Card 
+        title="My Bookings" 
+        loading={loading}
+        className="luxstay-card luxstay-fade-in"
+      >
+        <List
+          dataSource={bookings}
+          renderItem={(booking) => (
+            <List.Item
+              className="luxstay-fade-in"
+              actions={[
+                booking.status === 'confirmed' && (
+                  <Button
+                    danger
+                    className="luxstay-button"
+                    onClick={() => handleCancel(booking.booking_id)}
+                  >
+                    Cancel Booking
+                  </Button>
+                )
+              ].filter(Boolean)}
+            >
+              <List.Item.Meta
+                title={
+                  <Text strong className="luxstay-property-price">
+                    Booking #{booking.booking_id.slice(0, 8)}
                   </Text>
-                  <Text>
-                    Total Price: ${booking.totalPrice}
-                  </Text>
-                  <Text type={getStatusColor(booking.status)}>
-                    Status: {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                  </Text>
-                </Space>
-              }
-            />
-          </List.Item>
-        )}
-      />
-    </Card>
+                }
+                description={
+                  <Space direction="vertical" className="luxstay-property-details">
+                    <Text>
+                      <span className="luxstay-property-location">Dates:</span>{' '}
+                      {dayjs.unix(booking.check_in).format('MMM D, YYYY')} - {dayjs.unix(booking.check_out).format('MMM D, YYYY')}
+                    </Text>
+                    <Text>
+                      <span className="luxstay-property-location">Total Price:</span>{' '}
+                      ${booking.total_price}
+                    </Text>
+                    <Text type={getStatusColor(booking.status)}>
+                      <span className="luxstay-property-location">Status:</span>{' '}
+                      {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                    </Text>
+                  </Space>
+                }
+              />
+            </List.Item>
+          )}
+        />
+      </Card>
+    </div>
   );
 };
 

@@ -69,7 +69,7 @@ def handle_get_bookings(event, table):
             'body': json.dumps({
                 'bookings': response.get('Items', []),
                 'count': len(response.get('Items', []))
-            })
+            }, cls=CustomJsonEncoder)
         })
         
     except Exception as e:
@@ -172,10 +172,9 @@ def handle_create_booking(event, table):
 class CustomJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Decimal):
-            if float(obj).is_integer():
-                return int(float(obj))
-            else:
-                return float(obj)
+            return float(obj)
+        if isinstance(obj, datetime):
+            return obj.isoformat()
         return super(CustomJsonEncoder, self).default(obj)
 
 def respond(err, res=None):
