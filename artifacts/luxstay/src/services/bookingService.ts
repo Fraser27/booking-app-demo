@@ -3,33 +3,46 @@ import config from '../config.json';
 
 export interface Booking {
   id: string;
-  propertyId: string;
-  userId: string;
-  startDate: string;
-  endDate: string;
-  totalPrice: number;
+  property_id: string;
+  user_id: string;
+  check_in: number;
+  check_out: number;
+  total_price: number;
   status: 'pending' | 'confirmed' | 'cancelled';
-  createdAt: string;
-  updatedAt: string;
+  guest_details: {
+    name: string;
+    email: string;
+    phone: string;
+    adults: number;
+    children: number;
+  };
+  created_at: string;
+  updated_at: string;
 }
 
 export interface CreateBookingRequest {
-  propertyId: string;
-  startDate: string;
-  endDate: string;
+  property_id: string;
+  user_id: string;
+  check_in: number;
+  check_out: number;
+  guest_details: {
+    name: string;
+    email: string;
+    phone: string;
+    adults: number;
+    children: number;
+  };
 }
 
-export const createBooking = async (bookingData: CreateBookingRequest): Promise<Booking> => {
-  const { tokens } = await fetchAuthSession();
-  const token = tokens?.idToken?.toString();
-
+export const createBooking = async (booking: CreateBookingRequest): Promise<Booking> => {
+  const session = await fetchAuthSession();
   const response = await fetch(`${config.apiUrl}/properties/booking`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': token || ''
+      'Authorization': `Bearer ${session.tokens.idToken.toString()}`
     },
-    body: JSON.stringify(bookingData)
+    body: JSON.stringify(booking)
   });
 
   if (!response.ok) {

@@ -88,6 +88,16 @@ class Storage_Stack(NestedStack):
             projection_type=_dynamodb.ProjectionType.ALL
         )
 
+        # Add global secondary index for property_id
+        bookings_table.add_global_secondary_index(
+            index_name="PropertyIndex",
+            partition_key=_dynamodb.Attribute(
+                name="property_id",
+                type=_dynamodb.AttributeType.STRING
+            ),
+            projection_type=_dynamodb.ProjectionType.ALL
+        )
+
     def tag_my_stack(self, stack):
         tags = Tags.of(stack)
         tags.add("project", "luxury-property-booking")

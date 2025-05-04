@@ -39,7 +39,6 @@ def handle_get_bookings(event, table):
         if not user_id and not property_id:
             return respond(None, {
                 'statusCode': 400,
-                
                 'body': json.dumps({
                     'error': 'Either user_id or property_id must be provided'
                 })
@@ -59,14 +58,14 @@ def handle_get_bookings(event, table):
                 KeyConditionExpression=Key('user_id').eq(user_id)
             )
         else:
-            # Get all bookings for a property
+            # Get all bookings for a property using the PropertyIndex
             response = table.query(
+                IndexName='PropertyIndex',
                 KeyConditionExpression=Key('property_id').eq(property_id)
             )
         
         return respond(None, {
             'statusCode': 200,
-            
             'body': json.dumps({
                 'bookings': response.get('Items', []),
                 'count': len(response.get('Items', []))
@@ -89,9 +88,13 @@ def handle_create_booking(event, table):
     check_in = body.get('check_in')
     check_out = body.get('check_out')
     guests = body.get('guests', 1)
+    name = body.get('name')
+    email = body.get('email')
+    phone = body.get('phone')
+    total_price = body.get('total_price')
     
     # Validate input
-    if not all([property_id, user_id, check_in, check_out]):
+    if not all([property_id, user_id, check_in, check_out, name, email, phone, total_price]):
         return respond(None, {
             'statusCode': 400,
             'body': json.dumps({
@@ -141,6 +144,10 @@ def handle_create_booking(event, table):
                 'check_out': check_out,
                 'guests': guests,
                 'status': 'confirmed',
+                'name': name,
+                'email': email,
+                'phone': phone,
+                'total_price': total_price,
                 'created_at': datetime.now().isoformat()
             }
         )

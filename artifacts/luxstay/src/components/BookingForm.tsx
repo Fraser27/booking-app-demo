@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Form, DatePicker, Button, message, Card } from 'antd';
+import { Form, DatePicker, Button, message, Card, Input, InputNumber } from 'antd';
 import { createBooking } from '../services/bookingService';
+import { getCurrentUser } from 'aws-amplify/auth';
 import dayjs from 'dayjs';
 
 interface BookingFormProps {
@@ -9,18 +10,38 @@ interface BookingFormProps {
   onBookingSuccess?: () => void;
 }
 
+interface GuestDetails {
+  name: string;
+  email: string;
+  phone: string;
+  adults: number;
+  children: number;
+}
+
 const BookingForm: React.FC<BookingFormProps> = ({ propertyId, pricePerNight, onBookingSuccess }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (values: { dates: [dayjs.Dayjs, dayjs.Dayjs] }) => {
+  const handleSubmit = async (values: { 
+    dates: [dayjs.Dayjs, dayjs.Dayjs];
+    guestDetails: GuestDetails;
+  }) => {
     try {
       setLoading(true);
       const [startDate, endDate] = values.dates;
+      const user = await getCurrentUser();
+      
       const bookingData = {
-        propertyId,
-        startDate: startDate.format('YYYY-MM-DD'),
-        endDate: endDate.format('YYYY-MM-DD')
+        property_id: propertyId,
+        user_id: user.username,
+        check_in: startDate.startOf('day').unix(), // Convert to epoch time
+        check_out: endDate.startOf('day').unix(), // Convert to epoch time
+        guest_details: values.guestDetails,
+        total_price: calculateTotalPrice(values.dates),
+        name: values.guestDetails.name,
+        email: values.guestDetails.email,
+        phone: values.guestDetails.phone,
+        guests: values.guestDetails.adults + values.guestDetails.children
       };
 
       await createBooking(bookingData);
@@ -60,8 +81,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ propertyId, pricePerNight, on
               return current && current < dayjs().startOf('day');
             }}
             onChange={(dates) => {
-              const totalPrice = calculateTotalPrice(dates);
-              form.setFieldsValue({ totalPrice });
+              if (dates) {
+                form.setFieldsValue({ dates });
+                const totalPrice = calculateTotalPrice(dates);
+                form.setFieldsValue({ totalPrice });
+              }
             }}
           />
         </Form.Item>
@@ -70,6 +94,48 @@ const BookingForm: React.FC<BookingFormProps> = ({ propertyId, pricePerNight, on
           <div style={{ fontSize: '1.2em', fontWeight: 'bold' }}>
             ${calculateTotalPrice(form.getFieldValue('dates'))}
           </div>
+        </Form.Item>
+
+        <Form.Item
+          name={['guestDetails', 'name']}
+          label="Full Name"
+          rules={[{ required: true, message: 'Please enter your name' }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          name={['guestDetails', 'email']}
+          label="Email"
+          rules={[
+            { required: true, message: 'Please enter your email' },
+            { type: 'email', message: 'Please enter a valid email' }
+          ]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          name={['guestDetails', 'phone']}
+          label="Phone Number"
+          rules={[{ required: true, message: 'Please enter your phone number' }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          name={['guestDetails', 'adults']}
+          label="Number of Adults"
+          rules={[{ required: true, message: 'Please enter number of adults' }]}
+        >
+          <InputNumber min={1} max={10} style={{ width: '100%' }} />
+        </Form.Item>
+
+        <Form.Item
+          name={['guestDetails', 'children']}
+          label="Number of Children"
+        >
+          <InputNumber min={0} max={10} style={{ width: '100%' }} />
         </Form.Item>
 
         <Form.Item>

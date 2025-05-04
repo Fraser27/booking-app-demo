@@ -4,6 +4,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { searchProperties } from '../services/propertyService';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { withAuthenticator } from '@aws-amplify/ui-react';
+import PropertyDetails from './PropertyDetails';
 import '../styles/LuxstayTheme.css';
 
 const { Title, Text, Paragraph } = Typography;
@@ -34,6 +35,7 @@ const PropertySearch: React.FC = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState<string>('');
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [filters, setFilters] = useState<SearchFilters>({
     query: '',
     location: '',
@@ -99,149 +101,156 @@ const PropertySearch: React.FC = () => {
         </Paragraph>
       </div>
       
-      <Card className="luxstay-search-container">
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
-          <Row gutter={[16, 16]}>
-            <Col span={24}>
-              <Input
-                placeholder="Search by title, description, or location"
-                prefix={<SearchOutlined />}
-                value={filters.query}
-                onChange={(e) => setFilters({ ...filters, query: e.target.value })}
-                onPressEnter={handleSearch}
-                size="large"
-                style={{ borderRadius: '6px' }}
-              />
-            </Col>
-            
-            <Col span={12}>
-              <Select
-                style={{ width: '100%', borderRadius: '6px' }}
-                placeholder="Select Location"
-                value={filters.location}
-                onChange={(value) => setFilters({ ...filters, location: value })}
-                size="large"
-              >
-                <Option value="Maldives">Maldives</Option>
-                <Option value="Bali">Bali</Option>
-                <Option value="Mauritius">Mauritius</Option>
-              </Select>
-            </Col>
-            
-            <Col span={12}>
-              <Text>Price Range (per night)</Text>
-              <Slider
-                range
-                min={0}
-                max={2000}
-                value={filters.priceRange}
-                onChange={handlePriceRangeChange}
-              />
-            </Col>
-            
-            <Col span={12}>
-              <Select
-                style={{ width: '100%', borderRadius: '6px' }}
-                placeholder="Number of Bedrooms"
-                value={filters.bedrooms}
-                onChange={(value) => setFilters({ ...filters, bedrooms: value })}
-                size="large"
-              >
-                <Option value={0}>Any</Option>
-                <Option value={1}>1+</Option>
-                <Option value={2}>2+</Option>
-                <Option value={3}>3+</Option>
-                <Option value={4}>4+</Option>
-              </Select>
-            </Col>
-            
-            <Col span={12}>
-              <Select
-                style={{ width: '100%', borderRadius: '6px' }}
-                placeholder="Number of Bathrooms"
-                value={filters.bathrooms}
-                onChange={(value) => setFilters({ ...filters, bathrooms: value })}
-                size="large"
-              >
-                <Option value={0}>Any</Option>
-                <Option value={1}>1+</Option>
-                <Option value={2}>2+</Option>
-                <Option value={3}>3+</Option>
-              </Select>
-            </Col>
-            
-            <Col span={24}>
-              <Select
-                mode="multiple"
-                style={{ width: '100%', borderRadius: '6px' }}
-                placeholder="Select Amenities"
-                value={filters.amenities}
-                onChange={(value) => setFilters({ ...filters, amenities: value })}
-                size="large"
-              >
-                <Option value="pool">Pool</Option>
-                <Option value="wifi">WiFi</Option>
-                <Option value="parking">Parking</Option>
-                <Option value="gym">Gym</Option>
-                <Option value="spa">Spa</Option>
-              </Select>
-            </Col>
-            
-            <Col span={24} style={{ textAlign: 'center', marginTop: '16px' }}>
-              <Button 
-                className="luxstay-button"
-                onClick={handleSearch} 
-                loading={loading}
-                size="large"
-              >
-                Search Properties
-              </Button>
-            </Col>
-          </Row>
-        </Space>
-      </Card>
+      {selectedProperty ? (
+        <PropertyDetails property={selectedProperty} />
+      ) : (
+        <>
+          <Card className="luxstay-search-container">
+            <Space direction="vertical" size="large" style={{ width: '100%' }}>
+              <Row gutter={[16, 16]}>
+                <Col span={24}>
+                  <Input
+                    placeholder="Search by title, description, or location"
+                    prefix={<SearchOutlined />}
+                    value={filters.query}
+                    onChange={(e) => setFilters({ ...filters, query: e.target.value })}
+                    onPressEnter={handleSearch}
+                    size="large"
+                    style={{ borderRadius: '6px' }}
+                  />
+                </Col>
+                
+                <Col span={12}>
+                  <Select
+                    style={{ width: '100%', borderRadius: '6px' }}
+                    placeholder="Select Location"
+                    value={filters.location}
+                    onChange={(value) => setFilters({ ...filters, location: value })}
+                    size="large"
+                  >
+                    <Option value="Maldives">Maldives</Option>
+                    <Option value="Bali">Bali</Option>
+                    <Option value="Mauritius">Mauritius</Option>
+                  </Select>
+                </Col>
+                
+                <Col span={12}>
+                  <Text>Price Range (per night)</Text>
+                  <Slider
+                    range
+                    min={0}
+                    max={2000}
+                    value={filters.priceRange}
+                    onChange={handlePriceRangeChange}
+                  />
+                </Col>
+                
+                <Col span={12}>
+                  <Select
+                    style={{ width: '100%', borderRadius: '6px' }}
+                    placeholder="Number of Bedrooms"
+                    value={filters.bedrooms}
+                    onChange={(value) => setFilters({ ...filters, bedrooms: value })}
+                    size="large"
+                  >
+                    <Option value={0}>Any</Option>
+                    <Option value={1}>1+</Option>
+                    <Option value={2}>2+</Option>
+                    <Option value={3}>3+</Option>
+                    <Option value={4}>4+</Option>
+                  </Select>
+                </Col>
+                
+                <Col span={12}>
+                  <Select
+                    style={{ width: '100%', borderRadius: '6px' }}
+                    placeholder="Number of Bathrooms"
+                    value={filters.bathrooms}
+                    onChange={(value) => setFilters({ ...filters, bathrooms: value })}
+                    size="large"
+                  >
+                    <Option value={0}>Any</Option>
+                    <Option value={1}>1+</Option>
+                    <Option value={2}>2+</Option>
+                    <Option value={3}>3+</Option>
+                  </Select>
+                </Col>
+                
+                <Col span={24}>
+                  <Select
+                    mode="multiple"
+                    style={{ width: '100%', borderRadius: '6px' }}
+                    placeholder="Select Amenities"
+                    value={filters.amenities}
+                    onChange={(value) => setFilters({ ...filters, amenities: value })}
+                    size="large"
+                  >
+                    <Option value="pool">Pool</Option>
+                    <Option value="wifi">WiFi</Option>
+                    <Option value="parking">Parking</Option>
+                    <Option value="gym">Gym</Option>
+                    <Option value="spa">Spa</Option>
+                  </Select>
+                </Col>
+                
+                <Col span={24} style={{ textAlign: 'center', marginTop: '16px' }}>
+                  <Button 
+                    className="luxstay-button"
+                    onClick={handleSearch} 
+                    loading={loading}
+                    size="large"
+                  >
+                    Search Properties
+                  </Button>
+                </Col>
+              </Row>
+            </Space>
+          </Card>
 
-      <div style={{ marginTop: '32px' }}>
-        <Row gutter={[24, 24]}>
-          {properties.map((property) => (
-            <Col xs={24} sm={12} md={8} key={property.id}>
-              <Card
-                hoverable
-                className="luxstay-card luxstay-property-card"
-                cover={
-                  property.image_url ? (
-                    <img
-                      alt={property.title}
-                      src={property.image_url}
-                      className="luxstay-property-image"
+          <div style={{ marginTop: '32px' }}>
+            <Row gutter={[24, 24]}>
+              {properties.map((property) => (
+                <Col xs={24} sm={12} md={8} lg={6} key={property.id}>
+                  <Card
+                    hoverable
+                    className="luxstay-card luxstay-property-card"
+                    cover={
+                      property.image_url ? (
+                        <img
+                          alt={property.title}
+                          src={property.image_url}
+                          className="luxstay-property-image"
+                        />
+                      ) : null
+                    }
+                    onClick={() => setSelectedProperty(property)}
+                  >
+                    <Card.Meta
+                      title={property.title}
+                      description={
+                        <>
+                          <div className="luxstay-property-price">${property.price_per_night} <span style={{ fontSize: '0.9rem', fontWeight: 'normal' }}>per night</span></div>
+                          <div className="luxstay-property-location">{property.location}</div>
+                          <div className="luxstay-property-details">{property.bedrooms} beds • {property.bathrooms} baths</div>
+                          <div className="luxstay-property-amenities">{property.amenities.join(', ')}</div>
+                        </>
+                      }
                     />
-                  ) : null
-                }
-              >
-                <Card.Meta
-                  title={property.title}
-                  description={
-                    <>
-                      <div className="luxstay-property-price">${property.price_per_night} <span style={{ fontSize: '0.9rem', fontWeight: 'normal' }}>per night</span></div>
-                      <div className="luxstay-property-location">{property.location}</div>
-                      <div className="luxstay-property-details">{property.bedrooms} beds • {property.bathrooms} baths</div>
-                      <div className="luxstay-property-amenities">{property.amenities.join(', ')}</div>
-                    </>
-                  }
-                />
-              </Card>
-            </Col>
-          ))}
-        </Row>
-        
-        {properties.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            <Text style={{ fontSize: '1.1rem', color: '#888' }}>
-              Search for properties to see results here
-            </Text>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+            
+            {properties.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                <Text style={{ fontSize: '1.1rem', color: '#888' }}>
+                  Search for properties to see results here
+                </Text>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 };

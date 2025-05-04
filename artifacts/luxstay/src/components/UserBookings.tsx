@@ -12,7 +12,7 @@ const UserBookings: React.FC = () => {
   const fetchBookings = async () => {
     try {
       const data = await getBookings();
-      setBookings(data);
+      setBookings(JSON.parse(data['body'])['bookings']);
     } catch (error) {
       message.error('Failed to fetch bookings');
       console.error('Error fetching bookings:', error);
