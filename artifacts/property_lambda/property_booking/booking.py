@@ -105,6 +105,7 @@ def handle_create_booking(event, table):
     # Check for existing bookings
     try:
         response = table.query(
+            IndexName='PropertyIndex',
             KeyConditionExpression=Key('property_id').eq(property_id),
             FilterExpression='#status = :status',
             ExpressionAttributeNames={

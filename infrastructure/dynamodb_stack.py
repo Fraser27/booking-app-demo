@@ -59,7 +59,7 @@ class Storage_Stack(NestedStack):
             ),
             sort_key=_dynamodb.Attribute(
                 name="check_in",
-                type=_dynamodb.AttributeType.STRING
+                type=_dynamodb.AttributeType.NUMBER
             ),
             projection_type=_dynamodb.ProjectionType.ALL
         )
