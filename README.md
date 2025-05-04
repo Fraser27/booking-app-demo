@@ -1,5 +1,7 @@
 # Luxury Property Booking Application
 
+### Built with Amazon Q Agentic Code Assistant and Cursor Agent
+
 A modern, serverless application for managing luxury property bookings. This application provides a seamless experience for property owners to list their properties and for guests to search and book luxury accommodations.
 
 ## Architecture
