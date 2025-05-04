@@ -14,6 +14,8 @@ import PropertyForm from './components/PropertyForm';
 import PropertySearch from './components/PropertySearch';
 import { AuthHelper } from "./common/helpers/auth-help";
 import UserBookings from './components/UserBookings';
+import CustomerSupport from './components/CustomerSupport';
+import Reviews from './components/Reviews';
 
 // Create a wrapper component to handle navigation after logout
 const LogoutHandler = () => {
@@ -187,6 +189,8 @@ export default function App() {
             <Route path="/property-search" element={<PropertySearchPage />} />
             <Route path="/property-search/manage" element={<ManagePropertiesPage />} />
             <Route path="/bookings" element={<UserBookings />} />
+            <Route path="/reviews" element={<Reviews />} />
+            <Route path="/support" element={<CustomerSupport />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>

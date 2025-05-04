@@ -95,6 +95,7 @@ const ManagePropertiesPage: React.FC = () => {
                   icon={<UploadOutlined />} 
                   className="luxstay-button"
                   size="large"
+                  style={{ color: 'white' }}
                 >
                   Select File to Upload
                 </Button>

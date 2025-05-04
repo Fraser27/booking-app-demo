@@ -51,6 +51,8 @@ const PropertySearch: React.FC = () => {
         const { tokens } = await fetchAuthSession();
         if (tokens?.idToken) {
           setToken(tokens.idToken.toString());
+          // call handle search with default filters
+          handleSearch();
         }
       } catch (error) {
         console.error('Error getting token:', error);
@@ -60,9 +62,20 @@ const PropertySearch: React.FC = () => {
   }, []);
 
   const handleSearch = async () => {
+    var tokn = token
     if (!token) {
-      message.error('Please sign in to search properties');
-      return;
+      try {
+        const { tokens } = await fetchAuthSession();
+        setToken(tokens?.idToken?.toString() || '');
+        tokn = tokens?.idToken?.toString() || '';
+      } catch (error) {
+        message.error('Please sign in to search properties');
+        return;
+      }
+      if (!tokn) {
+        message.error('Please sign in to search properties');
+        return;
+      }
     }
 
     setLoading(true);
@@ -76,7 +89,7 @@ const PropertySearch: React.FC = () => {
         bedrooms: filters.bedrooms,
         bathrooms: filters.bathrooms,
         amenities: filters.amenities?.join(',')
-      }, token);
+      }, tokn);
       setProperties(response.properties);
     } catch (error) {
       message.error('Failed to search properties. Please try again.');
@@ -199,6 +212,7 @@ const PropertySearch: React.FC = () => {
                     onClick={handleSearch} 
                     loading={loading}
                     size="large"
+                    style={{ color: 'white' }}
                   >
                     Search Properties
                   </Button>

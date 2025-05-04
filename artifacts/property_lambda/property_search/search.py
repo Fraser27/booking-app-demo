@@ -34,22 +34,28 @@ def handler(event, context):
         "size": 10,
         "query": {
             "bool": {
-                "must": [
-                    {
-                        "multi_match": {
-                            "query": query,
-                            "fields": ["title^3", "description^2", "location", "amenities"],
-                            "type": "best_fields",
-                            "fuzziness": "AUTO"
-                        }
-                    }
-                ]
+                "must": []
             }
         },
         "sort": [
             {"price_per_night": {"order": "asc"}}
         ]
     }
+    
+    # Add query if provided, otherwise use match_all
+    if query:
+        search_query["query"]["bool"]["must"].append({
+            "multi_match": {
+                "query": query,
+                "fields": ["title^3", "description^2", "location", "amenities"],
+                "type": "best_fields",
+                "fuzziness": "AUTO"
+            }
+        })
+    else:
+        search_query["query"]["bool"]["must"].append({
+            "match_all": {}
+        })
     
     # Add filters if provided
     if filters:
