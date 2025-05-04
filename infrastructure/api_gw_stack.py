@@ -140,7 +140,8 @@ class ApiGw_Stack(Stack):
                     role_name= env_params['lambda_role_name'] + '_' + region,
                     assumed_by= _iam.ServicePrincipal('lambda.amazonaws.com'),
                     managed_policies= [
-                        _iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole")
+                        _iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole"),
+                        _iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AmazonDynamoDBFullAccess")
                     ]
                 )
 
