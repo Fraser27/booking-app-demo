@@ -21,7 +21,7 @@ interface SearchResponse {
     bedrooms: number;
     bathrooms: number;
     amenities: string[];
-    images: { content: string }[];
+    image_url: string;
   }>;
   total: number;
 }

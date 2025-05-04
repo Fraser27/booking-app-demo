@@ -4,8 +4,7 @@ import App from "./app";
 import { Amplify } from 'aws-amplify';
 import config from "./config.json";
 import "@cloudscape-design/global-styles/index.css";
-import "./styles/main.scss";
-
+import "./styles/LuxstayTheme.css";
 
 Amplify.configure({
   "aws_project_region": config.region,

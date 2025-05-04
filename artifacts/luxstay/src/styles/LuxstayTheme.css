@@ -1,0 +1,125 @@
+/* Luxstay Theme CSS */
+.luxstay-container {
+  min-height: 100vh;
+  background-color: #f0f2f5;
+  padding: 24px;
+}
+
+.luxstay-header {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.luxstay-title {
+  color: #1a1a1a !important;
+  font-size: 2.5rem !important;
+  margin-bottom: 16px !important;
+  font-weight: 600 !important;
+  background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.luxstay-subtitle {
+  color: #666 !important;
+  font-size: 1.2rem !important;
+  margin-bottom: 24px !important;
+}
+
+.luxstay-card {
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.luxstay-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+.luxstay-button {
+  padding: 8px 24px;
+  height: auto;
+  font-size: 1rem;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%);
+  border: none;
+  transition: transform 0.3s ease;
+}
+
+.luxstay-button:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #40a9ff 0%, #9254de 100%);
+}
+
+.luxstay-search-container {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.luxstay-property-card {
+  height: 100%;
+}
+
+.luxstay-property-image {
+  height: 200px;
+  object-fit: cover;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.luxstay-property-price {
+  color: #1890ff;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.luxstay-property-location {
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.luxstay-property-details {
+  color: #888;
+  margin-bottom: 8px;
+}
+
+.luxstay-property-amenities {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.luxstay-tab-button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.luxstay-tab-button.active {
+  background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%);
+  color: white;
+}
+
+.luxstay-form-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.luxstay-fade-in {
+  animation: fadeIn 0.8s ease-in-out;
+}

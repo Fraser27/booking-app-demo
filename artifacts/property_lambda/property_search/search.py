@@ -10,7 +10,7 @@ def handler(event, context):
     service = 'aoss'
     credentials = boto3.Session().get_credentials()
     awsauth = AWS4Auth(credentials.access_key, credentials.secret_key, region, service, session_token=credentials.token)
-    
+    s3_client = boto3.client('s3')
     # Get OpenSearch endpoint and index name
     host = os.environ['OPENSEARCH_ENDPOINT']
     index_name = os.environ['INDEX_NAME']
@@ -47,7 +47,6 @@ def handler(event, context):
             }
         },
         "sort": [
-            {"rating": {"order": "desc"}},
             {"price_per_night": {"order": "asc"}}
         ]
     }
@@ -69,7 +68,10 @@ def handler(event, context):
                     })
             else:
                 # Term queries for categorical fields
-                filter_conditions.append({"term": {key: value}})
+                if isinstance(value, int) and value > 0:
+                    filter_conditions.append({"term": {key: value}})
+                if isinstance(value, str) and value != "":
+                    filter_conditions.append({"term": {key: value}})
         search_query["query"]["bool"]["filter"] = filter_conditions
     
     # Execute search
@@ -84,6 +86,18 @@ def handler(event, context):
         property_data = hit['_source']
         property_data['id'] = hit['_id']
         property_data['score'] = hit['_score']
+        
+        if 'image_urls' in property_data and len(property_data['image_urls']) > 0:
+            image_url = property_data['image_urls'][0]
+            # Extract the key from the URL or use the content directly
+            s3_key = image_url.get('content', '') if isinstance(image_url, dict) else image_url
+            if s3_key:
+                presigned_url = s3_client.generate_presigned_url(
+                    ClientMethod='get_object',
+                    Params={'Bucket': os.environ['S3_BUCKET_NAME'], 'Key': s3_key},
+                    ExpiresIn=3600
+                )
+                property_data['image_url'] = presigned_url
         properties.append(property_data)
     
     return {

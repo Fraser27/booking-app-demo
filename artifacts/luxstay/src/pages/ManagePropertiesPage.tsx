@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Card, Button, Space, Typography, Upload, message } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { Card, Button, Space, Typography, Upload, message, Row, Col } from 'antd';
+import { UploadOutlined, FileAddOutlined, CloudUploadOutlined } from '@ant-design/icons';
 import type { UploadFile } from 'antd/es/upload/interface';
 import PropertyForm from '../components/PropertyForm'
 import config from '../config.json';
 import { fetchAuthSession } from 'aws-amplify/auth';
+import { withAuthenticator } from '@aws-amplify/ui-react';
+import '../styles/LuxstayTheme.css';
 
-const { Title } = Typography;
+const { Title, Paragraph } = Typography;
 
 const getAuthToken = async () => {
   const { tokens } = await fetchAuthSession();
@@ -43,41 +45,70 @@ const ManagePropertiesPage: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '24px' }}>
-      <Card>
+    <div className="luxstay-container luxstay-fade-in">
+      <div className="luxstay-header">
+        <Title level={2} className="luxstay-title">Manage Your Properties</Title>
+        <Paragraph className="luxstay-subtitle">
+          Add new properties to your portfolio or update existing ones
+        </Paragraph>
+      </div>
+      
+      <Card className="luxstay-search-container">
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
-          <Title level={2}>Manage Properties</Title>
-          
-          <Space>
-            <Button 
-              type={activeTab === 'upload' ? 'primary' : 'default'}
-              onClick={() => setActiveTab('upload')}
-            >
-              Bulk Upload
-            </Button>
-            <Button 
-              type={activeTab === 'manual' ? 'primary' : 'default'}
-              onClick={() => setActiveTab('manual')}
-            >
-              Manual Entry
-            </Button>
-          </Space>
+          <Row justify="center" style={{ marginBottom: '24px' }}>
+            <Col>
+              <Space size="middle">
+                <Button 
+                  className={`luxstay-tab-button ${activeTab === 'upload' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('upload')}
+                  icon={<CloudUploadOutlined />}
+                  size="large"
+                >
+                  Bulk Upload
+                </Button>
+                <Button 
+                  className={`luxstay-tab-button ${activeTab === 'manual' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('manual')}
+                  icon={<FileAddOutlined />}
+                  size="large"
+                >
+                  Manual Entry
+                </Button>
+              </Space>
+            </Col>
+          </Row>
 
           {activeTab === 'upload' ? (
-            <Upload
-              fileList={fileList}
-              beforeUpload={(file) => {
-                setFileList([file]);
-                handleUpload(file);
-                return false;
-              }}
-              onRemove={() => setFileList([])}
-              accept=".json,.csv"
-            >
-              <Button icon={<UploadOutlined />}>Select File</Button>
-            </Upload>
+            <div style={{ textAlign: 'center', padding: '40px 0' }}>
+              <Upload
+                fileList={fileList}
+                beforeUpload={(file) => {
+                  setFileList([file]);
+                  handleUpload(file);
+                  return false;
+                }}
+                onRemove={() => setFileList([])}
+                accept=".json,.csv"
+                style={{ width: '100%' }}
+              >
+                <Button 
+                  icon={<UploadOutlined />} 
+                  className="luxstay-button"
+                  size="large"
+                >
+                  Select File to Upload
+                </Button>
+              </Upload>
+              <Paragraph style={{ marginTop: '24px', color: '#888' }}>
+                Upload a JSON or CSV file containing property details.
+                <br />
+                The file should include title, description, location, price, bedrooms, bathrooms, and amenities.
+              </Paragraph>
+            </div>
           ) : (
-            <PropertyForm />
+            <div className="luxstay-form-container">
+              <PropertyForm />
+            </div>
           )}
         </Space>
       </Card>
@@ -85,4 +116,4 @@ const ManagePropertiesPage: React.FC = () => {
   );
 };
 
-export default ManagePropertiesPage; 
+export default withAuthenticator(ManagePropertiesPage);

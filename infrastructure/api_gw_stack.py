@@ -198,6 +198,7 @@ class ApiGw_Stack(Stack):
 
         search_api.add_method("POST", property_search_integration)
         booking_api.add_method("POST", property_booking_integration)
+        booking_api.add_method("GET", property_booking_integration)
 
         # Add CORS options
         self.add_cors_options(search_api)
@@ -234,6 +235,7 @@ class ApiGw_Stack(Stack):
                 'S3_BUCKET': bucket_name
             },
             role=custom_lambda_role,
+            timeout=_cdk.Duration.seconds(300),
             layers=[additional_libs_layer]
         )
 
@@ -280,6 +282,7 @@ class ApiGw_Stack(Stack):
             authorization_type=_apigw.AuthorizationType.COGNITO
         )
         self.add_cors_options(upload_image_api)
+
 
     def tag_my_stack(self, stack):
         tags = Tags.of(stack)

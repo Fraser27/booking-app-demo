@@ -1,4 +1,5 @@
 import { Box, Container, Header } from '@cloudscape-design/components';
+import WelcomePage from '../components/WelcomePage';
 
 export const NotFound = () => (
   <Container>
@@ -9,11 +10,7 @@ export const NotFound = () => (
 );
 
 export const HomePage = () => (
-  <Container>
-    <Box textAlign="center" padding="xxl">
-      <Header variant="h1">Welcome to Property Booking Assistant</Header>
-    </Box>
-  </Container>
+  <WelcomePage />
 );
 
 export const Help = ({ setPageId }: { setPageId: string }) => (
@@ -22,4 +19,4 @@ export const Help = ({ setPageId }: { setPageId: string }) => (
       <Header variant="h1">Help Center</Header>
     </Box>
   </Container>
-); 
+);
