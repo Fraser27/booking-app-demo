@@ -141,7 +141,7 @@ class ApiGw_Stack(Stack):
                     assumed_by= _iam.ServicePrincipal('lambda.amazonaws.com'),
                     managed_policies= [
                         _iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole"),
-                        _iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AmazonDynamoDBFullAccess")
+                        _iam.ManagedPolicy.from_aws_managed_policy_name("AmazonDynamoDBFullAccess")
                     ]
                 )
 
