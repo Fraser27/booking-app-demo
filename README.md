@@ -6,6 +6,9 @@
 
 A modern, serverless application for managing luxury property bookings. This application provides a seamless experience for property owners to list their properties and for guests to search and book luxury accommodations.
 
+## Demo
+![latest-output](https://github.com/user-attachments/assets/d6671245-304e-44fb-b4e7-a36381a739da)
+
 ## Architecture
 
 The application is built using AWS serverless services:
