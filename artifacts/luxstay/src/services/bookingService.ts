@@ -9,6 +9,8 @@ export interface Booking {
   check_out: number;
   total_price: number;
   status: 'pending' | 'confirmed' | 'cancelled';
+  property_title: string;
+  property_location: string;
   guest_details: {
     name: string;
     email: string;

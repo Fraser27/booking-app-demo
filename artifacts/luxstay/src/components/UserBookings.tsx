@@ -75,6 +75,14 @@ const UserBookings: React.FC = () => {
                 <div className={`luxstay-booking-status ${booking.status}`}>
                   {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                 </div>
+                <div className="luxstay-booking-property-info">
+                  <div className="luxstay-booking-property-title">
+                    {booking.property_title}
+                  </div>
+                  <div className="luxstay-booking-property-location">
+                    {booking.property_location}
+                  </div>
+                </div>
                 {booking.status === 'confirmed' && (
                   <Button
                     className="luxstay-booking-cancel-btn"

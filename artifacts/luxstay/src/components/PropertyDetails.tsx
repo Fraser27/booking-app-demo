@@ -53,9 +53,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ property }) => {
             </Space>
           </Space>
         </Card>
-
+        <Divider />
         <BookingForm
           propertyId={property.id}
+          propertyTitle={property.title}
+          propertyLocation={property.location}
           pricePerNight={property.price_per_night}
         />
       </Space>

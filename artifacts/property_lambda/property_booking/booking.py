@@ -92,6 +92,8 @@ def handle_create_booking(event, table):
     email = body.get('email')
     phone = body.get('phone')
     total_price = body.get('total_price')
+    property_title = body.get('property_title')
+    property_location = body.get('property_location')
     
     # Validate input
     if not all([property_id, user_id, check_in, check_out, name, email, phone, total_price]):
@@ -149,6 +151,8 @@ def handle_create_booking(event, table):
                 'email': email,
                 'phone': phone,
                 'total_price': total_price,
+                'property_title': property_title,
+                'property_location': property_location,
                 'created_at': datetime.now().isoformat()
             }
         )

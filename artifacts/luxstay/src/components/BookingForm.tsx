@@ -7,6 +7,8 @@ import '../styles/LuxstayTheme.css';
 
 interface BookingFormProps {
   propertyId: string;
+  propertyTitle: string;
+  propertyLocation: string;
   pricePerNight: number;
   onBookingSuccess?: () => void;
 }
@@ -19,9 +21,10 @@ interface GuestDetails {
   children: number;
 }
 
-const BookingForm: React.FC<BookingFormProps> = ({ propertyId, pricePerNight, onBookingSuccess }) => {
+const BookingForm: React.FC<BookingFormProps> = ({ propertyId, propertyTitle, propertyLocation, pricePerNight, onBookingSuccess }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   const handleSubmit = async (values: { 
     dates: [dayjs.Dayjs, dayjs.Dayjs];
@@ -42,7 +45,9 @@ const BookingForm: React.FC<BookingFormProps> = ({ propertyId, pricePerNight, on
         name: values.guestDetails.name,
         email: values.guestDetails.email,
         phone: values.guestDetails.phone,
-        guests: values.guestDetails.adults + values.guestDetails.children
+        guests: values.guestDetails.adults + values.guestDetails.children,
+        property_title: propertyTitle,
+        property_location: propertyLocation
       };
 
       await createBooking(bookingData);
@@ -65,7 +70,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ propertyId, pricePerNight, on
   };
 
   return (
-    <Card title="Book this property" style={{ maxWidth: 400, margin: '0 auto' }}>
+    <Card title="Book this property" style={{ maxWidth: '40%', marginRight: '10%' }}>
       <Form
         form={form}
         layout="vertical"
@@ -85,6 +90,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ propertyId, pricePerNight, on
               if (dates) {
                 form.setFieldsValue({ dates });
                 const totalPrice = calculateTotalPrice(dates);
+                setTotalPrice(totalPrice);
                 form.setFieldsValue({ totalPrice });
               }
             }}
@@ -93,7 +99,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ propertyId, pricePerNight, on
 
         <Form.Item label="Total Price">
           <div style={{ fontSize: '1.2em', fontWeight: 'bold' }}>
-            ${calculateTotalPrice(form.getFieldValue('dates'))}
+            {totalPrice}
           </div>
         </Form.Item>
 
