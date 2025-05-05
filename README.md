@@ -2,11 +2,15 @@
 
 ### Built with Amazon Q Agentic Code Assistant and Cursor Agent
 
+#### Documentation: https://deepwiki.com/Fraser27/booking-app-demo
+
 A modern, serverless application for managing luxury property bookings. This application provides a seamless experience for property owners to list their properties and for guests to search and book luxury accommodations.
 
 ## Architecture
 
 The application is built using AWS serverless services:
+<img width="1237" alt="Screenshot 2025-05-05 at 1 35 50 pm" src="https://github.com/user-attachments/assets/958c0af7-1694-40dc-ab6d-d0f552f68c04" />
+
 
 - **Frontend**: React-based UI hosted on AWS AppRunner
 - **Authentication**: Amazon Cognito for user authentication
