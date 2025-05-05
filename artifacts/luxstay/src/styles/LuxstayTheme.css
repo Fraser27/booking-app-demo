@@ -48,11 +48,13 @@
   border-radius: 6px;
   background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%);
   border: none;
+  color: white;
   transition: transform 0.3s ease;
 }
 
 .luxstay-button:hover {
   transform: translateY(-2px);
+  color: blue;
   background: linear-gradient(135deg, #40a9ff 0%, #9254de 100%);
 }
 

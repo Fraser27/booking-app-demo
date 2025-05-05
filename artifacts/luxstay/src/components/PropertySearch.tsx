@@ -227,7 +227,7 @@ const PropertySearch: React.FC = () => {
                         onClick={handleSearch} 
                         loading={loading}
                         size="large"
-                        style={{ color: 'white' }}
+                        
                       >
                         Search Properties
                       </Button>
