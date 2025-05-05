@@ -9,8 +9,8 @@ A modern, serverless application for managing luxury property bookings. This app
 ## Architecture
 
 The application is built using AWS serverless services:
+<img width="1237" alt="Screenshot 2025-05-05 at 1 35 50 pm" src="https://github.com/user-attachments/assets/958c0af7-1694-40dc-ab6d-d0f552f68c04" />
 
-<img width="1258" alt="Screenshot 2025-05-05 at 1 34 48 pm" src="https://github.com/user-attachments/assets/7837c9b4-6b0f-48b9-9826-1956ca68ef56" />
 
 - **Frontend**: React-based UI hosted on AWS AppRunner
 - **Authentication**: Amazon Cognito for user authentication
