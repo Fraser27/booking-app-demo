@@ -9,6 +9,15 @@ A modern, serverless application for managing luxury property bookings. This app
 ## Demo
 ![latest-output](https://github.com/user-attachments/assets/82bcfe51-8f05-4a8e-8fc1-338c191ff5e2)
 
+**Property Search**
+<img width="1392" alt="Property Search" src="https://github.com/user-attachments/assets/47a00a47-d305-4033-95da-b60b818cacfc" />
+
+**Property Listing**
+<img width="1392" alt="Property Listing" src="https://github.com/user-attachments/assets/f30f8aa9-6bee-4206-ab2d-6b52d1b7987b" />
+
+**Property Bookings**
+<img width="719" alt="Property Bookings" src="https://github.com/user-attachments/assets/3798e159-5920-4005-b593-b73570910240" />
+
 
 ## Architecture
 
