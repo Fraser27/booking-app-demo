@@ -25,6 +25,87 @@ A modern, serverless application for managing luxury property bookings. This app
 ## Architecture
 
 The application is built using AWS serverless services:
+
+```mermaid
+graph TD
+    %% Client Side
+    Client[Client Browser] --> AppRunner[AWS AppRunner]
+    
+    %% Frontend
+    subgraph "Frontend"
+        AppRunner --> ReactApp[React Application]
+        ReactApp --> AmplifyAuth[Amplify Authentication]
+        ReactApp --> PropertySearch[Property Search Component]
+        ReactApp --> PropertyManagement[Property Management Component]
+    end
+    
+    %% Authentication
+    subgraph "Authentication"
+        AmplifyAuth --> Cognito[Amazon Cognito]
+        Cognito --> UserPool[User Pool]
+        Cognito --> UserPoolClient[User Pool Client]
+    end
+    
+    %% API Layer
+    subgraph "API Layer"
+        PropertySearch --> APIGW[API Gateway]
+        PropertyManagement --> APIGW
+        APIGW --> CognitoAuthorizer[Cognito Authorizer]
+    end
+    
+    %% Backend Services
+    subgraph "Backend Services"
+        APIGW --> SearchLambda[Property Search Lambda]
+        APIGW --> BookingLambda[Property Booking Lambda]
+        
+        SearchLambda --> OpenSearch[OpenSearch Serverless]
+        BookingLambda --> DynamoDB[DynamoDB]
+        
+        SearchLambda --> S3Images[S3 Property Images]
+    end
+    
+    %% Data Storage
+    subgraph "Data Storage"
+        OpenSearch --> PropertyCollection[Property Collection]
+        DynamoDB --> BookingsTable[Bookings Table]
+        BookingsTable --> GSI1[UserBookingsIndex]
+        BookingsTable --> GSI2[PropertyBookingsIndex]
+        BookingsTable --> GSI3[UserIndex]
+        BookingsTable --> GSI4[UserPropertyIndex]
+        BookingsTable --> GSI5[PropertyIndex]
+    end
+    
+    %% Infrastructure as Code
+    subgraph "Infrastructure as Code"
+        CDK[AWS CDK] --> ApiGwStack[API Gateway Stack]
+        CDK --> DynamoDBStack[DynamoDB Stack]
+        CDK --> AppRunnerStack[AppRunner Stack]
+        CDK --> ECRStack[ECR UI Stack]
+        CDK --> OpenSearchStack[OpenSearch Vector DB Stack]
+        CDK --> LambdaLayerStack[Property Layer Stack]
+    end
+    
+    %% CI/CD
+    subgraph "CI/CD"
+        ECR[Amazon ECR] --> DockerImage[UI Docker Image]
+        CodeBuild[AWS CodeBuild] --> ECR
+        LambdaLayer[Lambda Layer] --> SearchLambda
+        LambdaLayer --> BookingLambda
+    end
+    
+    %% Styling
+    classDef aws fill:#FF9900,stroke:#232F3E,color:#232F3E,stroke-width:2px;
+    classDef frontend fill:#61DAFB,stroke:#282C34,color:#282C34,stroke-width:2px;
+    classDef database fill:#3C873A,stroke:#303030,color:#303030,stroke-width:2px;
+    classDef lambda fill:#FF9900,stroke:#232F3E,color:#232F3E,stroke-width:2px;
+    
+    class AppRunner,Cognito,APIGW,DynamoDB,S3Images,ECR,CodeBuild,OpenSearch aws;
+    class ReactApp,PropertySearch,PropertyManagement,AmplifyAuth frontend;
+    class BookingsTable,PropertyCollection,GSI1,GSI2,GSI3,GSI4,GSI5 database;
+    class SearchLambda,BookingLambda,LambdaLayer lambda;
+```
+
+
 <img width="1237" alt="Screenshot 2025-05-05 at 1 35 50 pm" src="https://github.com/user-attachments/assets/958c0af7-1694-40dc-ab6d-d0f552f68c04" />
 
 
