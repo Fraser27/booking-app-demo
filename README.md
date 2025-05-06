@@ -106,9 +106,6 @@ graph TD
 ```
 
 
-<img width="1237" alt="Screenshot 2025-05-05 at 1 35 50 pm" src="https://github.com/user-attachments/assets/958c0af7-1694-40dc-ab6d-d0f552f68c04" />
-
-
 - **Frontend**: React-based UI hosted on AWS AppRunner
 - **Authentication**: Amazon Cognito for user authentication
 - **API Layer**: Amazon API Gateway with Lambda integrations
