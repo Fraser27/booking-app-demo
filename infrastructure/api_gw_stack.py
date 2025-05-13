@@ -123,7 +123,7 @@ class ApiGw_Stack(Stack):
 
         parent_path='properties'
         properties_api = booking_api.root.add_resource(parent_path)
-        rest_endpoint_url = f'https://{booking_api.rest_api_id}.execute-api.{region}.amazonaws.com/{env_name}/{parent_path}/'
+        rest_endpoint_url = f'https://{booking_api.rest_api_id}.execute-api.{region}.amazonaws.com/{env_name}'
         
         method_responses = [
             {
