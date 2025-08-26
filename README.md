@@ -4,6 +4,8 @@
 
 #### Documentation: https://deepwiki.com/Fraser27/booking-app-demo
 
+#### Advanced OpenSearch Blog : https://aws.amazon.com/blogs/big-data/amazon-opensearch-service-101-create-your-first-search-application-with-opensearch/
+
 A modern, serverless application for managing luxury property bookings. This application provides a seamless experience for property owners to list their properties and for guests to search and book luxury accommodations.
 
 ## Demo
